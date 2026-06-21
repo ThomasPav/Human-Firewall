@@ -43,8 +43,8 @@ After 10 incidents you win only if every meter is in the safe zone (R ≥ 50, $ 
 Requires [Node.js](https://nodejs.org) 18+.
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/human-firewall.git
-cd human-firewall
+git clone https://github.com/ThomasPav/Human-Firewall.git
+cd Human-Firewall
 npm install
 npm run dev
 ```
