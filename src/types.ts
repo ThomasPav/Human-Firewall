@@ -34,6 +34,8 @@ export interface Scenario {
   title: string
   targets: string
   text: string
+  legitimacy: 'malicious' | 'legitimate' | 'ambiguous'
+  bestDecision: string
   outcomes: Record<string, Outcome>
   best: string
   learn: string
