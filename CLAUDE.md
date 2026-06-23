@@ -5,16 +5,14 @@ A cyber-security awareness card game for **non-technical staff** (HR, finance,
 sales, executives, admin, new hires, remote workers). Players face everyday
 incidents (phishing, fake invoices, deepfake calls, QR scams, MFA fatigue, etc.)
 and choose how to react. Consequences move four shared meters. The team wins by
-surviving 10 incidents in good shape.
+surviving 20 incidents in good shape.
 
 ## Source of truth — read this first
 - **`game-data.json`** is the single source of all content. Build the app to load
   it at runtime. **Never hard-code scenarios, outcomes, roles, or events.**
-- **`README.md`** is the full build spec. Follow it.
+- **`README.md`** documents the game and project for contributors.
 - **`humanfirewall.html`** is the working reference implementation — match its
   behaviour and visual feel.
-- **Ignore `Human_Firewall_Kit.pdf`.** It's only the printable kit; do not parse
-  it for content. All structured data lives in `game-data.json`.
 
 ## Data model (in `game-data.json`)
 - `meters`: four meters keyed `R` (Reputation), `M` (Funds, shown as `$Nk`),
@@ -23,9 +21,10 @@ surviving 10 incidents in good shape.
   (`higherIsBetter: false`).
 - `decisions`: TRUST, VERIFY, REPORT, IGNORE, ESCALATE — each has `meaning` + `color`.
 - `scenarios`: `id`, `category`/`categoryLabel`/`color`, `type`, `title`,
-  `targets`, `text`, `best`, `learn`, and an `outcomes` map. Each outcome has
-  `text` and a `deltas` object using meter keys, e.g. `{"S": -20, "X": 15}`.
-  A missing key means no change to that meter.
+  `targets`, `text`, `best`, `learn`, `legitimacy` (`malicious` | `legitimate` |
+  `ambiguous`), `bestDecision` (the single canonical right card), and an `outcomes`
+  map. Each outcome has `text` and a `deltas` object using meter keys, e.g.
+  `{"S": -20, "X": 15}`. A missing key means no change to that meter.
 - `roles`, `events` (some have a numeric `effect`; null `effect` = a rule the
   facilitator applies by hand), `ratings` (final bands from the Security meter).
 
@@ -35,9 +34,16 @@ surviving 10 incidents in good shape.
    `deltas` → show the scenario's `best` move and `learn` point.
 3. **Instant loss** the moment any meter crashes: R, M or S hit `min` (0), or X
    hits `max` (100).
-4. After 10 incidents with no crash, **win only if every meter is on the safe side
+4. After 20 incidents with no crash, **win only if every meter is on the safe side
    of its `winLine`** (R≥50, M>0, S≥40, X≤80). Otherwise it's an "exposed" ending.
 5. Final star rating comes from the Security meter via `ratings`.
+6. **Decision tension:** not every scenario is an attack. On `legitimate` scenarios
+   TRUST is correct and over-reacting carries a cost; on `ambiguous` ones VERIFY
+   wins but TRUST is a gamble rather than an automatic failure. Show `legitimacy`
+   on the outcome screen (attack / legitimate / judgment call).
+7. **Balanced draw:** all five decisions must be correct answers across the deck.
+   The 20-card deck must include at least one scenario per `bestDecision` value
+   with no single decision dominating.
 
 ## Two required modes
 - **Solo** — self-paced, one player, score + rating at the end.
