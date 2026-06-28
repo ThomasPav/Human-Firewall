@@ -66,6 +66,7 @@ export interface GameData {
     title: string
     subtitle: string
     incidentsPerGame: number
+    wrongAnswerPenalty: number
   }
   meters: Record<string, MeterConfig>
   decisions: Decision[]

@@ -57,6 +57,26 @@ export function applyDeltas(
   return next
 }
 
+// A delta is "harmful" when it pushes a meter toward its losing side:
+// for higher-is-better meters that means a drop, for Stress (lower is better)
+// it means a rise. Wrong calls amplify only the harmful side of an outcome,
+// so a bad decision bites harder while any silver lining stays intact.
+export function amplifyHarm(
+  deltas: Record<string, number>,
+  meterConfigs: Record<string, MeterConfig>,
+  multiplier: number,
+): Record<string, number> {
+  if (multiplier === 1) return deltas
+  const out: Record<string, number> = {}
+  for (const k of Object.keys(deltas)) {
+    const v = deltas[k]
+    const cfg = meterConfigs[k]
+    const harmful = cfg ? (cfg.higherIsBetter ? v < 0 : v > 0) : v < 0
+    out[k] = harmful ? Math.round(v * multiplier) : v
+  }
+  return out
+}
+
 export function crashedMeter(
   meters: MeterValues,
   meterConfigs: Record<string, MeterConfig>,

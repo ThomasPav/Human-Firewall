@@ -78,6 +78,19 @@ button { font-family: inherit; color: inherit; cursor: pointer; border: none; }
 
 .counter strong { color: var(--text); }
 
+.quitbtn {
+  font-size: 11px;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  background: transparent;
+  padding: 4px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.quitbtn:hover { border-color: var(--bad); color: var(--bad); background: #2a1417; }
+
 /* ── HUD ─────────────────────────────────── */
 .hud {
   display: grid;
@@ -421,6 +434,8 @@ button { font-family: inherit; color: inherit; cursor: pointer; border: none; }
 .note.best b { color: #67d49a; }
 .note.learn  { background: #2e2611; border: 1px solid #5a4a1c; margin-top: 9px; }
 .note.learn b { color: #e6c265; }
+.note.penalty { background: #36161a; border: 1px solid #6a2730; margin-bottom: 10px; }
+.note.penalty b { color: var(--bad); }
 
 /* ── Actions ─────────────────────────────── */
 .actions {

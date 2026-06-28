@@ -22,6 +22,8 @@ Not every scenario is an attack. On legitimate requests, trusting is correct —
 
 The right call depends on context. After each decision the game reveals what would really happen and what the best move was — that's the learning moment.
 
+Mistakes carry weight: when you pick anything other than the scenario's best decision, the harmful side of the outcome is amplified, so a wrong call costs you more than a right one ever gains. You can also leave a game at any point with the **✕ Menu** button in the top bar to return to the main menu.
+
 ### The four meters
 
 | Meter | Starts at | Instant loss if... |

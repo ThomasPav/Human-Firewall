@@ -2,7 +2,8 @@
   "meta": {
     "title": "Human Firewall",
     "subtitle": "A cyber-awareness card game",
-    "incidentsPerGame": 20
+    "incidentsPerGame": 20,
+    "wrongAnswerPenalty": 1.75
   },
   "meters": {
     "R": {

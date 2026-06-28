@@ -3,6 +3,7 @@ import rawData from '../game-data.json'
 import type { GameData } from './types'
 import {
   type GameState,
+  amplifyHarm,
   applyDeltas,
   checkWin,
   crashedMeter,
@@ -25,6 +26,7 @@ interface OutcomeData {
   deltas: Record<string, number>
   best: string
   learn: string
+  aggravated: boolean
 }
 
 interface EndData {
@@ -51,16 +53,24 @@ export default function App() {
       const scenario = gameState.deck[gameState.incident - 1]
       const outcome = scenario.outcomes[decisionName]
       const decision = data.decisions.find((d) => d.name === decisionName)
-      const newMeters = applyDeltas(gameState.meters, outcome.deltas ?? {}, data.meters)
+
+      // Wrong call? Amplify the harmful side of the outcome so mistakes bite harder.
+      const aggravated = decisionName !== scenario.bestDecision
+      const effectiveDeltas = aggravated
+        ? amplifyHarm(outcome.deltas ?? {}, data.meters, data.meta.wrongAnswerPenalty)
+        : (outcome.deltas ?? {})
+
+      const newMeters = applyDeltas(gameState.meters, effectiveDeltas, data.meters)
 
       setGameState((prev) => (prev ? { ...prev, meters: newMeters } : prev))
       setOutcomeData({
         decisionName,
         decisionColor: decision?.color ?? '#fff',
         outcomeText: outcome.text,
-        deltas: outcome.deltas ?? {},
+        deltas: effectiveDeltas,
         best: scenario.best,
         learn: scenario.learn,
+        aggravated,
       })
       setScreen('outcome')
     },
@@ -107,6 +117,15 @@ export default function App() {
     setGameState((prev) => (prev ? { ...prev, eventUsed: true } : prev))
   }, [])
 
+  const handleQuitToMenu = useCallback(() => {
+    const ok = window.confirm('Leave this game and return to the main menu? Your progress will be lost.')
+    if (!ok) return
+    setGameState(null)
+    setOutcomeData(null)
+    setEndData(null)
+    setScreen('start')
+  }, [])
+
   // Keys 1–5 select a decision during the scenario screen
   useEffect(() => {
     if (screen !== 'scenario' || !gameState) return
@@ -132,11 +151,21 @@ export default function App() {
             </div>
             <div className="pill mono">{isFacilitator ? 'FACILITATOR' : 'SOLO'}</div>
             {screen !== 'end' && (
-              <div className="counter mono" aria-live="polite" aria-atomic="true">
-                INCIDENT{' '}
-                <strong>{String(gameState.incident).padStart(2, '0')}</strong> /{' '}
-                {data.meta.incidentsPerGame}
-              </div>
+              <>
+                <div className="counter mono" aria-live="polite" aria-atomic="true">
+                  INCIDENT{' '}
+                  <strong>{String(gameState.incident).padStart(2, '0')}</strong> /{' '}
+                  {data.meta.incidentsPerGame}
+                </div>
+                <button
+                  type="button"
+                  className="quitbtn mono"
+                  onClick={handleQuitToMenu}
+                  aria-label="Quit to main menu"
+                >
+                  ✕ Menu
+                </button>
+              </>
             )}
           </header>
         )}
@@ -171,6 +200,7 @@ export default function App() {
               meterConfigs={data.meters}
               best={outcomeData.best}
               learn={outcomeData.learn}
+              aggravated={outcomeData.aggravated}
               isLast={gameState.incident >= data.meta.incidentsPerGame}
               onNext={handleNext}
             />

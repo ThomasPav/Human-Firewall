@@ -8,6 +8,7 @@ interface Props {
   meterConfigs: Record<string, MeterConfig>
   best: string
   learn: string
+  aggravated: boolean
   isLast: boolean
   onNext: () => void
 }
@@ -63,6 +64,7 @@ export function OutcomeScreen({
   meterConfigs,
   best,
   learn,
+  aggravated,
   isLast,
   onNext,
 }: Props) {
@@ -73,6 +75,12 @@ export function OutcomeScreen({
         <b style={{ color: decisionColor }}>{decisionName}</b>
       </p>
       <p className="outcome-text">{outcomeText}</p>
+
+      {aggravated && (
+        <div className="note penalty" role="alert">
+          <b>⚠ Wrong call.</b> The fallout hits harder than usual.
+        </div>
+      )}
 
       <DeltaChips deltas={deltas} meterConfigs={meterConfigs} />
 
