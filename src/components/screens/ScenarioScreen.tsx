@@ -48,7 +48,7 @@ export function ScenarioScreen({
   return (
     <div className="card" key={scenario.id}>
       <span className="tag" style={{ background: scenario.color }}>
-        {scenario.type}
+        {scenario.categoryLabel}
       </span>
       <p className="targets">Targets: {scenario.targets}</p>
       <h2 className="scenario-title">{scenario.title}</h2>
