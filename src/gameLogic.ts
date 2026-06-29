@@ -4,6 +4,23 @@ export const METER_KEYS = ['R', 'M', 'S', 'X'] as const
 export type MeterKey = (typeof METER_KEYS)[number]
 export type MeterValues = Record<MeterKey, number>
 
+/** Active "amplify" event modifier: ×mult on wrong answers of a channel. */
+export interface ActiveMod {
+  channel: string | null
+  channelLabel: string | null
+  color: string
+  label: string
+  mult: number
+  until: number
+}
+
+/** Active "reward_best" event modifier: +amount Security on correct answers. */
+export interface ActiveReward {
+  amount: number
+  label: string
+  until: number
+}
+
 export interface GameState {
   mode: 'solo' | 'facilitator'
   phase: 'scenario' | 'outcome' | 'end'
@@ -11,6 +28,8 @@ export interface GameState {
   meters: MeterValues
   deck: Scenario[]
   eventUsed: boolean
+  activeMod: ActiveMod | null
+  activeReward: ActiveReward | null
 }
 
 export function shuffle<T>(arr: T[]): T[] {
@@ -57,24 +76,27 @@ export function applyDeltas(
   return next
 }
 
-// A delta is "harmful" when it pushes a meter toward its losing side:
-// for higher-is-better meters that means a drop, for Stress (lower is better)
-// it means a rise. Wrong calls amplify only the harmful side of an outcome,
-// so a bad decision bites harder while any silver lining stays intact.
-export function amplifyHarm(
+// Multiply only the harmful side of an outcome by `mult` (used by an active
+// "amplify" event). Harm = a drop on higher-is-better meters, a rise on Stress.
+export function amplify(
   deltas: Record<string, number>,
-  meterConfigs: Record<string, MeterConfig>,
-  multiplier: number,
+  mult: number,
 ): Record<string, number> {
-  if (multiplier === 1) return deltas
   const out: Record<string, number> = {}
   for (const k of Object.keys(deltas)) {
     const v = deltas[k]
-    const cfg = meterConfigs[k]
-    const harmful = cfg ? (cfg.higherIsBetter ? v < 0 : v > 0) : v < 0
-    out[k] = harmful ? Math.round(v * multiplier) : v
+    const bad = k !== 'X' ? v < 0 : v > 0
+    out[k] = bad ? v * mult : v
   }
   return out
+}
+
+/** A modifier is in effect while the current incident is at or before its `until`. */
+export function modActive(
+  mod: ActiveMod | ActiveReward | null,
+  incident: number,
+): boolean {
+  return !!mod && incident <= mod.until
 }
 
 export function crashedMeter(
@@ -117,6 +139,49 @@ export function getRating(secValue: number, ratings: Rating[]): Rating {
   return ratings[ratings.length - 1]
 }
 
+// Draw a balanced round: guarantee one of every bestDecision, then fill the
+// rest up to a per-decision cap (round-size ÷ 4) so no single answer dominates.
+export function buildDeck(scenarios: Scenario[], roundSize: number): Scenario[] {
+  const size = Math.min(roundSize, scenarios.length)
+  const cap = Math.max(3, Math.round(size / 4))
+
+  const byBest: Record<string, Scenario[]> = {}
+  for (const s of scenarios) {
+    ;(byBest[s.bestDecision] ||= []).push(s)
+  }
+
+  const pick: Scenario[] = []
+  const used = new Set<number>()
+  const count: Record<string, number> = {}
+
+  // one of each best-decision first (guarantees every card type gets used)
+  for (const b of shuffle(Object.keys(byBest))) {
+    if (pick.length >= size) break
+    const s = shuffle(byBest[b]).find((x) => !used.has(x.id))
+    if (s) {
+      pick.push(s)
+      used.add(s.id)
+      count[b] = (count[b] || 0) + 1
+    }
+  }
+  // fill the rest, respecting the per-decision cap
+  for (const s of shuffle(scenarios.filter((x) => !used.has(x.id)))) {
+    if (pick.length >= size) break
+    if ((count[s.bestDecision] || 0) < cap) {
+      pick.push(s)
+      used.add(s.id)
+      count[s.bestDecision] = (count[s.bestDecision] || 0) + 1
+    }
+  }
+  // last resort if caps left us short
+  for (const s of shuffle(scenarios.filter((x) => !used.has(x.id)))) {
+    if (pick.length >= size) break
+    pick.push(s)
+    used.add(s.id)
+  }
+  return shuffle(pick)
+}
+
 export function initState(mode: 'solo' | 'facilitator', data: GameData): GameState {
   const meters = {} as MeterValues
   for (const k of METER_KEYS) {
@@ -127,7 +192,9 @@ export function initState(mode: 'solo' | 'facilitator', data: GameData): GameSta
     phase: 'scenario',
     incident: 1,
     meters,
-    deck: shuffle(data.scenarios),
+    deck: buildDeck(data.scenarios, data.meta.incidentsPerGame),
     eventUsed: false,
+    activeMod: null,
+    activeReward: null,
   }
 }

@@ -1,4 +1,5 @@
 import type { MeterConfig } from '../../types'
+import type { OutcomeNote } from '../../App'
 
 interface Props {
   decisionName: string
@@ -6,9 +7,10 @@ interface Props {
   outcomeText: string
   deltas: Record<string, number>
   meterConfigs: Record<string, MeterConfig>
+  legitimacy: 'malicious' | 'legitimate' | 'ambiguous'
   best: string
   learn: string
-  verdict: 'best' | 'ok' | 'wrong'
+  notes: OutcomeNote[]
   isLast: boolean
   onNext: () => void
 }
@@ -19,6 +21,12 @@ const DELTA_ORDER: Array<[string, string]> = [
   ['M', 'Funds'],
   ['X', 'Stress'],
 ]
+
+const VERDICT: Record<Props['legitimacy'], [string, string]> = {
+  malicious: ['mal', 'This was an attack'],
+  legitimate: ['leg', 'This was legitimate'],
+  ambiguous: ['amb', 'A judgment call'],
+}
 
 function DeltaChips({
   deltas,
@@ -62,37 +70,32 @@ export function OutcomeScreen({
   outcomeText,
   deltas,
   meterConfigs,
+  legitimacy,
   best,
   learn,
-  verdict,
+  notes,
   isLast,
   onNext,
 }: Props) {
+  const [vClass, vText] = VERDICT[legitimacy]
+
   return (
     <div className="card">
+      <div className={`vtag ${vClass}`}>{vText}</div>
       <p className="chosen">
         You chose &middot;{' '}
         <b style={{ color: decisionColor }}>{decisionName}</b>
       </p>
       <p className="outcome-text">{outcomeText}</p>
 
-      {verdict === 'wrong' && (
-        <div className="note penalty" role="alert">
-          <b>⚠ Wrong call.</b> The fallout hits harder than usual.
-        </div>
-      )}
-      {verdict === 'best' && (
-        <div className="note correct">
-          <b>✓ Best move.</b> The strongest response to this one.
-        </div>
-      )}
-      {verdict === 'ok' && (
-        <div className="note correct">
-          <b>✓ Good call.</b> A safe, correct choice — see the best move below.
-        </div>
-      )}
-
       <DeltaChips deltas={deltas} meterConfigs={meterConfigs} />
+
+      {notes.map((n, i) => (
+        <div key={i} className={`ampnote ${n.kind === 'amp' ? 'bad' : 'good'}`} role="status">
+          {n.kind === 'amp' ? '⚠ ' : '✓ '}
+          {n.text}
+        </div>
+      ))}
 
       <div className="note best">
         <b>Best move:</b> {best}

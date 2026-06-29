@@ -434,10 +434,44 @@ button { font-family: inherit; color: inherit; cursor: pointer; border: none; }
 .note.best b { color: #67d49a; }
 .note.learn  { background: #2e2611; border: 1px solid #5a4a1c; margin-top: 9px; }
 .note.learn b { color: #e6c265; }
-.note.penalty { background: #36161a; border: 1px solid #6a2730; margin-bottom: 10px; }
-.note.penalty b { color: var(--bad); }
-.note.correct { background: #10301f; border: 1px solid #1d5234; margin-bottom: 10px; }
-.note.correct b { color: #67d49a; }
+/* Legitimacy verdict badge on the outcome screen */
+.vtag {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 11px;
+  border-radius: 7px;
+  margin-bottom: 12px;
+}
+.vtag.mal { background: #3a1715; color: #ef8a83; border: 1px solid #5a2420; }
+.vtag.leg { background: #10301f; color: #67d49a; border: 1px solid #1d5234; }
+.vtag.amb { background: #2e2611; color: #e6c265; border: 1px solid #5a4a1c; }
+
+/* Active-event banner above a scenario */
+.evbanner {
+  border-left: 4px solid var(--warn);
+  background: #161f30;
+  border-radius: 10px;
+  padding: 9px 13px;
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: #cdd9ea;
+}
+.evbanner b { color: #fff; }
+
+/* Per-decision event modifier note on the outcome screen */
+.ampnote {
+  font-size: 13px;
+  border-radius: 9px;
+  padding: 8px 12px;
+  margin: 0 0 12px;
+  font-weight: 600;
+}
+.ampnote.bad { background: #3a1715; color: #ef8a83; border: 1px solid #5a2420; }
+.ampnote.good { background: #10301f; color: #67d49a; border: 1px solid #1d5234; }
 
 /* ── Actions ─────────────────────────────── */
 .actions {

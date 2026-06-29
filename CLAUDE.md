@@ -19,14 +19,22 @@ surviving 20 incidents in good shape.
   `S` (Security), `X` (Stress). Each has `start`, `min`, `max`, `winLine`, `warn`,
   `crit`, `higherIsBetter`. **Stress is the only meter where lower is better**
   (`higherIsBetter: false`).
-- `decisions`: TRUST, VERIFY, REPORT, IGNORE, ESCALATE — each has `meaning` + `color`.
-- `scenarios`: `id`, `category`/`categoryLabel`/`color`, `type`, `title`,
-  `targets`, `text`, `best`, `learn`, `legitimacy` (`malicious` | `legitimate` |
-  `ambiguous`), `bestDecision` (the single canonical right card), and an `outcomes`
-  map. Each outcome has `text` and a `deltas` object using meter keys, e.g.
-  `{"S": -20, "X": 15}`. A missing key means no change to that meter.
-- `roles`, `events` (some have a numeric `effect`; null `effect` = a rule the
-  facilitator applies by hand), `ratings` (final bands from the Security meter).
+- `decisions`: TRUST, VERIFY, REPORT, ESCALATE (four cards; IGNORE was removed) —
+  each has `meaning` + `color`.
+- `scenarios`: 40 cards, each with `id`, `category`/`categoryLabel`/`color`, `type`,
+  `title`, `targets`, `text`, `best`, `learn`, `legitimacy` (`malicious` |
+  `legitimate` | `ambiguous`), `bestDecision` (the single canonical right card:
+  TRUST | VERIFY | REPORT | ESCALATE), and an `outcomes` map. Each outcome has
+  `text` and a `deltas` object using meter keys, e.g. `{"S": -28, "X": 15}`. A
+  missing key means no change. The deck is split evenly: 10 scenarios per decision.
+- `roles`, `ratings` (final bands from the Security meter).
+- `events`: twist cards, each with a `channel` (a scenario `category`, or null),
+  `channelLabel`, `color`, `text`, and a structured `effect`:
+  - `{"kind":"meter","deltas":{…}}` — apply the meter change immediately.
+  - `{"kind":"amplify","mult":2,"duration":3}` — for the next `duration` incidents,
+    multiply the **wrong-answer** penalty on cards of this `channel`.
+  - `{"kind":"reward_best","amount":5,"duration":3}` — for the next `duration`
+    incidents, a correct answer earns +`amount` Security.
 
 ## Rules that must stay correct
 1. Start each meter at its `start` value; clamp every change to `min`/`max`.
@@ -41,9 +49,14 @@ surviving 20 incidents in good shape.
    TRUST is correct and over-reacting carries a cost; on `ambiguous` ones VERIFY
    wins but TRUST is a gamble rather than an automatic failure. Show `legitimacy`
    on the outcome screen (attack / legitimate / judgment call).
-7. **Balanced draw:** all five decisions must be correct answers across the deck.
-   The 20-card deck must include at least one scenario per `bestDecision` value
-   with no single decision dominating.
+7. **Balanced draw:** all four decisions are correct answers across the deck
+   (10 scenarios each). `buildDeck` must include at least one scenario per
+   `bestDecision` and cap any single one (cap = round-size ÷ 4, ≈5 of 20).
+8. **Harder scoring & correlated events:** penalties are scaled up in the data.
+   Apply an active `amplify` event's multiplier in the scoring step **only** when
+   the chosen decision is **not** the `bestDecision` and the scenario's `category`
+   matches the active event's `channel`; `reward_best` adds Security on a correct
+   call; both expire after their `duration`. Show the active modifier as a banner.
 
 ## Two required modes
 - **Solo** — self-paced, one player, score + rating at the end.
@@ -53,7 +66,7 @@ surviving 20 incidents in good shape.
 ## Tech & conventions
 - Target stack: **Vite + React + TypeScript** (unless told otherwise).
 - Keep all content in `game-data.json`; type the data with interfaces.
-- Responsive down to mobile; keyboard-accessible (number keys 1–5 select decisions);
+- Responsive down to mobile; keyboard-accessible (number keys 1–4 select decisions);
   respect `prefers-reduced-motion`; visible focus states.
 - Keep the four-meter HUD and the per-decision meter animation — that consequence
   feedback is the core of the experience.

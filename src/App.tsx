@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useState } from 'react'
 import rawData from '../game-data.json'
-import type { GameData } from './types'
+import type { EventEffect, GameData } from './types'
 import {
   type GameState,
-  amplifyHarm,
+  amplify,
   applyDeltas,
   checkWin,
   crashedMeter,
   initState,
+  modActive,
 } from './gameLogic'
 import { MeterHUD } from './components/MeterHUD'
 import { StartScreen } from './components/screens/StartScreen'
@@ -19,15 +20,20 @@ const data = rawData as unknown as GameData
 
 type Screen = 'start' | 'scenario' | 'outcome' | 'end'
 
+export interface OutcomeNote {
+  kind: 'amp' | 'reward'
+  text: string
+}
+
 interface OutcomeData {
   decisionName: string
   decisionColor: string
   outcomeText: string
   deltas: Record<string, number>
+  legitimacy: 'malicious' | 'legitimate' | 'ambiguous'
   best: string
   learn: string
-  verdict: 'best' | 'ok' | 'wrong'
-  aggravated: boolean
+  notes: OutcomeNote[]
 }
 
 interface EndData {
@@ -55,34 +61,50 @@ export default function App() {
       const outcome = scenario.outcomes[decisionName]
       const decision = data.decisions.find((d) => d.name === decisionName)
 
-      // A scenario can have several correct answers; only the truly wrong ones
-      // get penalised. bestDecision is always acceptable even if not listed.
-      const acceptable = scenario.acceptableDecisions ?? [scenario.bestDecision]
-      const verdict: 'best' | 'ok' | 'wrong' =
-        decisionName === scenario.bestDecision
-          ? 'best'
-          : acceptable.includes(decisionName)
-            ? 'ok'
-            : 'wrong'
+      let deltas = { ...(outcome.deltas ?? {}) }
+      const notes: OutcomeNote[] = []
+      const wrong = decisionName !== scenario.bestDecision
 
-      // Wrong call? Amplify the harmful side of the outcome so mistakes bite harder.
-      const aggravated = verdict === 'wrong'
-      const effectiveDeltas = aggravated
-        ? amplifyHarm(outcome.deltas ?? {}, data.meters, data.meta.wrongAnswerPenalty)
-        : (outcome.deltas ?? {})
+      // An active "amplify" event multiplies the penalty for a wrong answer,
+      // but only on scenarios whose category matches the event's channel.
+      if (
+        modActive(gameState.activeMod, gameState.incident) &&
+        gameState.activeMod &&
+        scenario.category === gameState.activeMod.channel &&
+        wrong
+      ) {
+        deltas = amplify(deltas, gameState.activeMod.mult)
+        notes.push({
+          kind: 'amp',
+          text: `${gameState.activeMod.label}: wrong-answer penalty ×${gameState.activeMod.mult}`,
+        })
+      }
 
-      const newMeters = applyDeltas(gameState.meters, effectiveDeltas, data.meters)
+      // An active "reward_best" event grants bonus Security for a correct call.
+      if (
+        modActive(gameState.activeReward, gameState.incident) &&
+        gameState.activeReward &&
+        !wrong
+      ) {
+        deltas = { ...deltas, S: (deltas.S ?? 0) + gameState.activeReward.amount }
+        notes.push({
+          kind: 'reward',
+          text: `${gameState.activeReward.label}: +${gameState.activeReward.amount} Security for a correct call`,
+        })
+      }
+
+      const newMeters = applyDeltas(gameState.meters, deltas, data.meters)
 
       setGameState((prev) => (prev ? { ...prev, meters: newMeters } : prev))
       setOutcomeData({
         decisionName,
         decisionColor: decision?.color ?? '#fff',
         outcomeText: outcome.text,
-        deltas: effectiveDeltas,
+        deltas,
+        legitimacy: scenario.legitimacy,
         best: scenario.best,
         learn: scenario.learn,
-        verdict,
-        aggravated,
+        notes,
       })
       setScreen('outcome')
     },
@@ -111,15 +133,47 @@ export default function App() {
     setScreen('scenario')
   }, [gameState])
 
+  // Apply a drawn event card: a "meter" effect changes meters immediately,
+  // while "amplify"/"reward_best" install a modifier that lasts a few incidents.
   const handleApplyEvent = useCallback(
-    (effect: Record<string, number>) => {
+    (effect: EventEffect, eventTitle: string, eventColor: string, channel: string | null, channelLabel: string | null) => {
       if (!gameState) return
-      const newMeters = applyDeltas(gameState.meters, effect, data.meters)
-      setGameState((prev) => (prev ? { ...prev, meters: newMeters } : prev))
-      const crashed = crashedMeter(newMeters, data.meters)
-      if (crashed) {
-        setEndData({ survived: false, crashedKey: crashed })
-        setScreen('end')
+      setGameState((prev) => {
+        if (!prev) return prev
+        if (effect.kind === 'meter') {
+          return { ...prev, meters: applyDeltas(prev.meters, effect.deltas, data.meters) }
+        }
+        if (effect.kind === 'amplify') {
+          return {
+            ...prev,
+            activeMod: {
+              channel,
+              channelLabel,
+              color: eventColor,
+              label: eventTitle,
+              mult: effect.mult,
+              until: prev.incident + effect.duration - 1,
+            },
+          }
+        }
+        // reward_best
+        return {
+          ...prev,
+          activeReward: {
+            amount: effect.amount,
+            label: eventTitle,
+            until: prev.incident + effect.duration - 1,
+          },
+        }
+      })
+
+      if (effect.kind === 'meter') {
+        const newMeters = applyDeltas(gameState.meters, effect.deltas, data.meters)
+        const crashed = crashedMeter(newMeters, data.meters)
+        if (crashed) {
+          setEndData({ survived: false, crashedKey: crashed })
+          setScreen('end')
+        }
       }
     },
     [gameState],
@@ -138,7 +192,7 @@ export default function App() {
     setScreen('start')
   }, [])
 
-  // Keys 1–5 select a decision during the scenario screen
+  // Keys 1–4 select a decision during the scenario screen
   useEffect(() => {
     if (screen !== 'scenario' || !gameState) return
     const scenario = gameState.deck[gameState.incident - 1]
@@ -197,6 +251,11 @@ export default function App() {
               mode={gameState.mode}
               eventUsed={gameState.eventUsed}
               events={data.events}
+              incident={gameState.incident}
+              activeMod={modActive(gameState.activeMod, gameState.incident) ? gameState.activeMod : null}
+              activeReward={
+                modActive(gameState.activeReward, gameState.incident) ? gameState.activeReward : null
+              }
               onDecide={handleDecision}
               onEventDrawn={handleEventDrawn}
               onApplyEvent={handleApplyEvent}
@@ -210,9 +269,10 @@ export default function App() {
               outcomeText={outcomeData.outcomeText}
               deltas={outcomeData.deltas}
               meterConfigs={data.meters}
+              legitimacy={outcomeData.legitimacy}
               best={outcomeData.best}
               learn={outcomeData.learn}
-              verdict={outcomeData.verdict}
+              notes={outcomeData.notes}
               isLast={gameState.incident >= data.meta.incidentsPerGame}
               onNext={handleNext}
             />

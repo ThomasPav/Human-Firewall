@@ -36,8 +36,6 @@ export interface Scenario {
   text: string
   legitimacy: 'malicious' | 'legitimate' | 'ambiguous'
   bestDecision: string
-  /** Every decision that counts as a correct (non-penalised) answer, best first. */
-  acceptableDecisions?: string[]
   outcomes: Record<string, Outcome>
   best: string
   learn: string
@@ -51,10 +49,20 @@ export interface Role {
   ability: string
 }
 
+/** An event's effect is one of three structured kinds (V3). */
+export type EventEffect =
+  | { kind: 'meter'; deltas: Record<string, number> }
+  | { kind: 'amplify'; mult: number; duration: number }
+  | { kind: 'reward_best'; amount: number; duration: number }
+
 export interface GameEvent {
   title: string
   text: string
-  effect: Record<string, number> | null
+  /** Scenario category this event correlates with, or null for a global event. */
+  channel: string | null
+  channelLabel: string | null
+  color: string
+  effect: EventEffect
 }
 
 export interface Rating {
@@ -68,7 +76,6 @@ export interface GameData {
     title: string
     subtitle: string
     incidentsPerGame: number
-    wrongAnswerPenalty: number
   }
   meters: Record<string, MeterConfig>
   decisions: Decision[]

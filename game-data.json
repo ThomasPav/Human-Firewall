@@ -2,8 +2,7 @@
   "meta": {
     "title": "Human Firewall",
     "subtitle": "A cyber-awareness card game",
-    "incidentsPerGame": 20,
-    "wrongAnswerPenalty": 1.25
+    "incidentsPerGame": 20
   },
   "meters": {
     "R": {
@@ -100,11 +99,6 @@
       "meaning": "Flag it to IT / Security (report-phishing button, ticket, or security@)."
     },
     {
-      "name": "IGNORE",
-      "color": "#6b6f76",
-      "meaning": "Do nothing. Delete or dismiss it and move on."
-    },
-    {
       "name": "ESCALATE",
       "color": "#6b3fa0",
       "meaning": "Hand the decision to a manager or security lead for approval."
@@ -113,59 +107,6 @@
   "scenarios": [
     {
       "id": 1,
-      "category": "EMAIL",
-      "categoryLabel": "Email & Messages",
-      "color": "#1e5fa8",
-      "type": "Phishing",
-      "title": "The Password Reset",
-      "targets": "Anyone",
-      "text": "An urgent email “from Microsoft” warns your account will be locked in 24 hours. It tells you to click a link and re-enter your password now.",
-      "legitimacy": "malicious",
-      "outcomes": {
-        "TRUST": {
-          "text": "You enter your password on the fake page. Credentials stolen — the attacker logs in.",
-          "deltas": {
-            "S": -20,
-            "R": -10,
-            "X": 15
-          }
-        },
-        "VERIFY": {
-          "text": "You hover the link, see a strange domain, and open the real portal yourself. No harm done.",
-          "deltas": {
-            "S": 5
-          }
-        },
-        "REPORT": {
-          "text": "You use ‘Report Phishing’. Security blocks the sender for the whole company.",
-          "deltas": {
-            "S": 10,
-            "X": -5
-          }
-        },
-        "IGNORE": {
-          "text": "You delete it. You’re safe, but colleagues still receive the same trap.",
-          "deltas": {}
-        },
-        "ESCALATE": {
-          "text": "Your manager confirms it’s fake. Minor delay, no harm.",
-          "deltas": {
-            "S": 5,
-            "X": 5
-          }
-        }
-      },
-      "best": "REPORT (or VERIFY)",
-      "bestDecision": "REPORT",
-      "acceptableDecisions": [
-        "REPORT",
-        "VERIFY",
-        "ESCALATE"
-      ],
-      "learn": "Real providers never ask you to confirm a password through an email link — go to the site yourself, or report it."
-    },
-    {
-      "id": 2,
       "category": "DEVICE",
       "categoryLabel": "Devices & Tech",
       "color": "#0f766e",
@@ -178,9 +119,9 @@
         "TRUST": {
           "text": "You assume it’s fine and change nothing. Attackers reuse the password and break into your email.",
           "deltas": {
-            "S": -20,
-            "M": -10,
-            "X": 15
+            "S": -30,
+            "M": -15,
+            "X": 20
           }
         },
         "VERIFY": {
@@ -196,13 +137,6 @@
             "X": -5
           }
         },
-        "IGNORE": {
-          "text": "You move on. The reused password is quietly abused weeks later.",
-          "deltas": {
-            "S": -10,
-            "X": 10
-          }
-        },
         "ESCALATE": {
           "text": "You ask IT to reset everywhere and switch on MFA and a password manager.",
           "deltas": {
@@ -214,15 +148,10 @@
       },
       "best": "ESCALATE / REPORT",
       "bestDecision": "ESCALATE",
-      "acceptableDecisions": [
-        "ESCALATE",
-        "VERIFY",
-        "REPORT"
-      ],
       "learn": "One leaked password unlocks everything if you reuse it — use unique passwords and a password manager."
     },
     {
-      "id": 3,
+      "id": 2,
       "category": "DEVICE",
       "categoryLabel": "Devices & Tech",
       "color": "#0f766e",
@@ -235,9 +164,9 @@
         "TRUST": {
           "text": "You tap Approve just to make it stop. The attacker is now inside your account.",
           "deltas": {
-            "S": -20,
+            "S": -30,
             "R": -5,
-            "X": 15
+            "X": 20
           }
         },
         "VERIFY": {
@@ -253,13 +182,6 @@
             "X": -5
           }
         },
-        "IGNORE": {
-          "text": "You deny and silence your phone. The attack stops, but no one is warned.",
-          "deltas": {
-            "S": 5,
-            "X": 5
-          }
-        },
         "ESCALATE": {
           "text": "You call IT, who reset your credentials immediately.",
           "deltas": {
@@ -269,15 +191,10 @@
       },
       "best": "REPORT",
       "bestDecision": "REPORT",
-      "acceptableDecisions": [
-        "REPORT",
-        "VERIFY",
-        "ESCALATE"
-      ],
       "learn": "Never approve a login prompt you didn’t start — repeated prompts are an attack. Deny and report."
     },
     {
-      "id": 4,
+      "id": 3,
       "category": "MOBILE",
       "categoryLabel": "On the Go",
       "color": "#c2710c",
@@ -290,9 +207,9 @@
         "TRUST": {
           "text": "You scan and enter your card. The details are stolen on a fake page.",
           "deltas": {
-            "M": -15,
-            "S": -10,
-            "X": 10
+            "M": -20,
+            "S": -15,
+            "X": 15
           }
         },
         "VERIFY": {
@@ -308,10 +225,6 @@
             "X": -5
           }
         },
-        "IGNORE": {
-          "text": "You ignore it and pay another way. No harm to you.",
-          "deltas": {}
-        },
         "ESCALATE": {
           "text": "Facilities investigate where the sticker came from.",
           "deltas": {
@@ -321,15 +234,10 @@
       },
       "best": "REPORT",
       "bestDecision": "REPORT",
-      "acceptableDecisions": [
-        "REPORT",
-        "VERIFY",
-        "ESCALATE"
-      ],
       "learn": "A QR code hides where it really goes — don’t scan random ones in public; use the official app or site."
     },
     {
-      "id": 5,
+      "id": 4,
       "category": "MONEY",
       "categoryLabel": "Money & Payments",
       "color": "#b5292f",
@@ -342,9 +250,9 @@
         "TRUST": {
           "text": "You pay the new account. The money goes straight to a fraudster.",
           "deltas": {
-            "M": -25,
-            "R": -10,
-            "X": 15
+            "M": -35,
+            "R": -15,
+            "X": 20
           }
         },
         "VERIFY": {
@@ -360,13 +268,6 @@
             "X": -5
           }
         },
-        "IGNORE": {
-          "text": "You don’t pay at all. Awkward with a real supplier, but no money lost.",
-          "deltas": {
-            "R": -5,
-            "X": 5
-          }
-        },
         "ESCALATE": {
           "text": "Dual approval catches the mismatch before payment.",
           "deltas": {
@@ -376,15 +277,10 @@
       },
       "best": "VERIFY (call a known number)",
       "bestDecision": "VERIFY",
-      "acceptableDecisions": [
-        "VERIFY",
-        "REPORT",
-        "ESCALATE"
-      ],
       "learn": "Always confirm changed bank details by calling a number you already trust — never the one on the invoice."
     },
     {
-      "id": 6,
+      "id": 5,
       "category": "DEVICE",
       "categoryLabel": "Devices & Tech",
       "color": "#0f766e",
@@ -397,9 +293,9 @@
         "TRUST": {
           "text": "You plug it in. Malware runs automatically and spreads onto the network.",
           "deltas": {
-            "S": -20,
-            "M": -10,
-            "X": 15
+            "S": -30,
+            "M": -15,
+            "X": 20
           }
         },
         "VERIFY": {
@@ -415,10 +311,6 @@
             "X": -5
           }
         },
-        "IGNORE": {
-          "text": "You bin it. Safe, but a possible drop attack goes unreported.",
-          "deltas": {}
-        },
         "ESCALATE": {
           "text": "IT investigate a possible ‘USB drop’ targeting the office.",
           "deltas": {
@@ -428,15 +320,10 @@
       },
       "best": "REPORT",
       "bestDecision": "REPORT",
-      "acceptableDecisions": [
-        "REPORT",
-        "VERIFY",
-        "ESCALATE"
-      ],
       "learn": "‘USB drop’ attacks bait your curiosity — never plug in a drive you found. Hand it to IT."
     },
     {
-      "id": 7,
+      "id": 6,
       "category": "VOICE",
       "categoryLabel": "Phone & Voice",
       "color": "#6b3fa0",
@@ -449,9 +336,9 @@
         "TRUST": {
           "text": "You make the transfer. The voice was AI-cloned; the funds are gone.",
           "deltas": {
-            "M": -25,
-            "R": -10,
-            "X": 20
+            "M": -35,
+            "R": -15,
+            "X": 30
           }
         },
         "VERIFY": {
@@ -467,12 +354,6 @@
             "X": -5
           }
         },
-        "IGNORE": {
-          "text": "You hang up. Safe, but the attempt isn’t reported.",
-          "deltas": {
-            "X": 5
-          }
-        },
         "ESCALATE": {
           "text": "You require the normal payment-approval process, which stops it.",
           "deltas": {
@@ -482,15 +363,10 @@
       },
       "best": "VERIFY (call back on a trusted number)",
       "bestDecision": "VERIFY",
-      "acceptableDecisions": [
-        "VERIFY",
-        "REPORT",
-        "ESCALATE"
-      ],
       "learn": "AI can clone a voice. Urgency + secrecy + money is the scam pattern — always verify on a known channel."
     },
     {
-      "id": 8,
+      "id": 7,
       "category": "SOCIAL",
       "categoryLabel": "Social & Online",
       "color": "#b83280",
@@ -503,7 +379,7 @@
         "TRUST": {
           "text": "The post stays up. Attackers harvest the details for a targeted phishing attack.",
           "deltas": {
-            "S": -10,
+            "S": -15,
             "R": -5,
             "X": 5
           }
@@ -521,12 +397,6 @@
             "X": -5
           }
         },
-        "IGNORE": {
-          "text": "The post stays public and the risk remains.",
-          "deltas": {
-            "S": -5
-          }
-        },
         "ESCALATE": {
           "text": "You ask a manager to clarify the social-media policy for everyone.",
           "deltas": {
@@ -536,15 +406,10 @@
       },
       "best": "REPORT (and coach them)",
       "bestDecision": "REPORT",
-      "acceptableDecisions": [
-        "REPORT",
-        "VERIFY",
-        "ESCALATE"
-      ],
       "learn": "Badges, screens and ‘behind the scenes’ posts leak details attackers use. Think before you post."
     },
     {
-      "id": 9,
+      "id": 8,
       "category": "DEVICE",
       "categoryLabel": "Devices & Tech",
       "color": "#0f766e",
@@ -557,9 +422,9 @@
         "TRUST": {
           "text": "You pay the ransom. There’s no guarantee of recovery — and you’re now a known payer.",
           "deltas": {
-            "M": -25,
-            "S": -10,
-            "X": 20
+            "M": -35,
+            "S": -15,
+            "X": 30
           }
         },
         "VERIFY": {
@@ -573,13 +438,6 @@
             "X": -5
           }
         },
-        "IGNORE": {
-          "text": "You keep working. The ransomware spreads to shared drives.",
-          "deltas": {
-            "S": -20,
-            "X": 15
-          }
-        },
         "ESCALATE": {
           "text": "Incident response and leadership coordinate a clean recovery — no payment.",
           "deltas": {
@@ -590,15 +448,10 @@
       },
       "best": "REPORT (disconnect & call IT)",
       "bestDecision": "REPORT",
-      "acceptableDecisions": [
-        "REPORT",
-        "VERIFY",
-        "ESCALATE"
-      ],
       "learn": "Don’t pay and don’t panic — isolate the device and call IT. Good backups beat ransoms."
     },
     {
-      "id": 10,
+      "id": 9,
       "category": "EMAIL",
       "categoryLabel": "Email & Messages",
       "color": "#1e5fa8",
@@ -611,9 +464,9 @@
         "TRUST": {
           "text": "You send the file. The account was hijacked — employee data is leaked.",
           "deltas": {
-            "R": -15,
-            "S": -15,
-            "X": 15
+            "R": -20,
+            "S": -20,
+            "X": 20
           }
         },
         "VERIFY": {
@@ -629,12 +482,6 @@
             "X": -5
           }
         },
-        "IGNORE": {
-          "text": "You don’t send it, but the hijacked account stays active and dangerous.",
-          "deltas": {
-            "S": -5
-          }
-        },
         "ESCALATE": {
           "text": "Manager and security are looped in and the account is locked.",
           "deltas": {
@@ -644,15 +491,10 @@
       },
       "best": "VERIFY, then REPORT",
       "bestDecision": "VERIFY",
-      "acceptableDecisions": [
-        "VERIFY",
-        "REPORT",
-        "ESCALATE"
-      ],
       "learn": "Even a trusted account can be hijacked — verify unusual data requests through another channel."
     },
     {
-      "id": 11,
+      "id": 10,
       "category": "SOCIAL",
       "categoryLabel": "Social & Online",
       "color": "#b83280",
@@ -665,9 +507,9 @@
         "TRUST": {
           "text": "You reply and help, and get drawn into a gift-card / transfer scam.",
           "deltas": {
-            "M": -10,
+            "M": -15,
             "R": -5,
-            "X": 10
+            "X": 15
           }
         },
         "VERIFY": {
@@ -683,10 +525,6 @@
             "X": -5
           }
         },
-        "IGNORE": {
-          "text": "You ignore it. Safe for you; others may still be targeted.",
-          "deltas": {}
-        },
         "ESCALATE": {
           "text": "Comms and security alert all staff to the fake account.",
           "deltas": {
@@ -696,15 +534,10 @@
       },
       "best": "REPORT",
       "bestDecision": "REPORT",
-      "acceptableDecisions": [
-        "REPORT",
-        "VERIFY",
-        "ESCALATE"
-      ],
       "learn": "Impersonation accounts copy names and photos — verify identity before acting on ‘confidential’ asks."
     },
     {
-      "id": 12,
+      "id": 11,
       "category": "VOICE",
       "categoryLabel": "Phone & Voice",
       "color": "#6b3fa0",
@@ -717,8 +550,8 @@
         "TRUST": {
           "text": "You install the ‘fix’ and grant access. The caller now controls your PC.",
           "deltas": {
-            "S": -20,
-            "X": 15
+            "S": -30,
+            "X": 20
           }
         },
         "VERIFY": {
@@ -734,12 +567,6 @@
             "X": -5
           }
         },
-        "IGNORE": {
-          "text": "You hang up and move on. Safe.",
-          "deltas": {
-            "X": 5
-          }
-        },
         "ESCALATE": {
           "text": "IT investigate the spoofed support call.",
           "deltas": {
@@ -749,66 +576,10 @@
       },
       "best": "VERIFY (call IT back yourself)",
       "bestDecision": "VERIFY",
-      "acceptableDecisions": [
-        "VERIFY",
-        "REPORT",
-        "ESCALATE"
-      ],
       "learn": "Real IT won’t cold-call you for remote access — hang up and call the number you already know."
     },
     {
-      "id": 13,
-      "category": "PHYSICAL",
-      "categoryLabel": "Physical & In-Person",
-      "color": "#8a5a2b",
-      "type": "Tailgating",
-      "title": "Hold the Door",
-      "targets": "Receptionist / Anyone",
-      "text": "Someone in a delivery uniform, arms full of boxes, smiles at the secure door behind you: “Thanks — could you hold it? I’ve forgotten my badge.”",
-      "legitimacy": "malicious",
-      "outcomes": {
-        "TRUST": {
-          "text": "You hold the door. An unauthorised stranger is now inside the building.",
-          "deltas": {
-            "S": -15,
-            "X": 10
-          }
-        },
-        "VERIFY": {
-          "text": "You politely point them to reception to sign in. They had no business there.",
-          "deltas": {
-            "S": 10
-          }
-        },
-        "REPORT": {
-          "text": "You alert security, who check and escort them.",
-          "deltas": {
-            "S": 10,
-            "X": -5
-          }
-        },
-        "IGNORE": {
-          "text": "You let the door close behind you. Safe-ish, but no one is alerted.",
-          "deltas": {}
-        },
-        "ESCALATE": {
-          "text": "Reception verifies whether they have an appointment.",
-          "deltas": {
-            "S": 5
-          }
-        }
-      },
-      "best": "VERIFY (send them to reception)",
-      "bestDecision": "VERIFY",
-      "acceptableDecisions": [
-        "VERIFY",
-        "REPORT",
-        "ESCALATE"
-      ],
-      "learn": "‘Tailgating’ bypasses all your tech security — everyone badges in, no exceptions, however polite."
-    },
-    {
-      "id": 14,
+      "id": 12,
       "category": "DEVICE",
       "categoryLabel": "Devices & Tech",
       "color": "#0f766e",
@@ -821,8 +592,8 @@
         "TRUST": {
           "text": "You upload the data. The client list is now in the hands of an unknown third party.",
           "deltas": {
-            "R": -10,
-            "S": -10,
+            "R": -15,
+            "S": -15,
             "X": 5
           }
         },
@@ -838,10 +609,6 @@
             "S": 10
           }
         },
-        "IGNORE": {
-          "text": "You stick with the approved process. No harm done.",
-          "deltas": {}
-        },
         "ESCALATE": {
           "text": "IT review and provide a sanctioned tool.",
           "deltas": {
@@ -851,15 +618,10 @@
       },
       "best": "VERIFY / ESCALATE with IT",
       "bestDecision": "VERIFY",
-      "acceptableDecisions": [
-        "VERIFY",
-        "REPORT",
-        "ESCALATE"
-      ],
       "learn": "Free ‘helpful’ tools can harvest your data — check with IT before uploading any company information."
     },
     {
-      "id": 15,
+      "id": 13,
       "category": "EMAIL",
       "categoryLabel": "Email & Messages",
       "color": "#1e5fa8",
@@ -872,8 +634,8 @@
         "TRUST": {
           "text": "You enable content. Hidden macro malware runs on your machine.",
           "deltas": {
-            "S": -20,
-            "X": 15
+            "S": -30,
+            "X": 20
           }
         },
         "VERIFY": {
@@ -889,10 +651,6 @@
             "X": -5
           }
         },
-        "IGNORE": {
-          "text": "You close the file. Safe.",
-          "deltas": {}
-        },
         "ESCALATE": {
           "text": "IT examine the file in a safe environment.",
           "deltas": {
@@ -902,15 +660,10 @@
       },
       "best": "REPORT (don’t enable content)",
       "bestDecision": "REPORT",
-      "acceptableDecisions": [
-        "REPORT",
-        "VERIFY",
-        "ESCALATE"
-      ],
       "learn": "‘Enable content’ on an unexpected document can run hidden malware — when in doubt, report it."
     },
     {
-      "id": 16,
+      "id": 14,
       "category": "MOBILE",
       "categoryLabel": "On the Go",
       "color": "#c2710c",
@@ -923,9 +676,9 @@
         "TRUST": {
           "text": "You wait and hope it turns up. The data is exposed if the wrong person finds it.",
           "deltas": {
-            "R": -10,
-            "S": -10,
-            "X": 15
+            "R": -15,
+            "S": -15,
+            "X": 20
           }
         },
         "VERIFY": {
@@ -941,14 +694,6 @@
             "X": -5
           }
         },
-        "IGNORE": {
-          "text": "You say nothing. The unsecured laptop becomes a breach.",
-          "deltas": {
-            "R": -15,
-            "S": -15,
-            "X": 15
-          }
-        },
         "ESCALATE": {
           "text": "IT and your manager handle containment and any disclosure.",
           "deltas": {
@@ -958,15 +703,10 @@
       },
       "best": "REPORT (fast, so IT can wipe it)",
       "bestDecision": "REPORT",
-      "acceptableDecisions": [
-        "REPORT",
-        "VERIFY",
-        "ESCALATE"
-      ],
       "learn": "Report lost devices immediately — a quick remote lock or wipe turns a disaster into a non-event."
     },
     {
-      "id": 17,
+      "id": 15,
       "category": "VOICE",
       "categoryLabel": "Phone & Voice",
       "color": "#6b3fa0",
@@ -980,8 +720,8 @@
           "text": "You send the list. It’s used to build a convincing mass-phishing campaign.",
           "deltas": {
             "R": -5,
-            "S": -15,
-            "X": 10
+            "S": -20,
+            "X": 15
           }
         },
         "VERIFY": {
@@ -997,10 +737,6 @@
             "X": -5
           }
         },
-        "IGNORE": {
-          "text": "You don’t send anything. Safe.",
-          "deltas": {}
-        },
         "ESCALATE": {
           "text": "A manager verifies whether any audit is actually engaged.",
           "deltas": {
@@ -1010,69 +746,10 @@
       },
       "best": "VERIFY (through your own contact)",
       "bestDecision": "VERIFY",
-      "acceptableDecisions": [
-        "VERIFY",
-        "REPORT",
-        "ESCALATE"
-      ],
       "learn": "‘Officials’ who pressure you for staff data are a classic pretext — verify through a contact you already trust."
     },
     {
-      "id": 18,
-      "category": "VOICE",
-      "categoryLabel": "Phone & Voice",
-      "color": "#6b3fa0",
-      "type": "Code Theft",
-      "title": "Read Me Your Code",
-      "targets": "Anyone",
-      "text": "Right after a login alert, you get a call: “Hi, your bank’s fraud team here. To cancel the suspicious login, read me the 6-digit code we just texted you.”",
-      "legitimacy": "malicious",
-      "outcomes": {
-        "TRUST": {
-          "text": "You read the code aloud. That code was the key — the attacker completes their login.",
-          "deltas": {
-            "M": -20,
-            "S": -15,
-            "X": 15
-          }
-        },
-        "VERIFY": {
-          "text": "You hang up and call the bank on the number on your card. It’s a scam.",
-          "deltas": {
-            "S": 10
-          }
-        },
-        "REPORT": {
-          "text": "You report the call and freeze the account.",
-          "deltas": {
-            "S": 5,
-            "X": -5
-          }
-        },
-        "IGNORE": {
-          "text": "You hang up. Safe.",
-          "deltas": {
-            "X": 5
-          }
-        },
-        "ESCALATE": {
-          "text": "You loop in your bank’s verified fraud line.",
-          "deltas": {
-            "S": 5
-          }
-        }
-      },
-      "best": "VERIFY (never share a code)",
-      "bestDecision": "VERIFY",
-      "acceptableDecisions": [
-        "VERIFY",
-        "REPORT",
-        "ESCALATE"
-      ],
-      "learn": "No real bank or service ever asks you to read back a one-time code — that code unlocks your account."
-    },
-    {
-      "id": 19,
+      "id": 16,
       "category": "MONEY",
       "categoryLabel": "Money & Payments",
       "color": "#b5292f",
@@ -1098,15 +775,7 @@
           "text": "You flag it as fraud. Security investigates, finds nothing, and a real supplier is left waiting.",
           "deltas": {
             "R": -5,
-            "X": 10
-          }
-        },
-        "IGNORE": {
-          "text": "You don’t pay. The genuine supplier chases late fees and the relationship sours.",
-          "deltas": {
-            "M": -10,
-            "R": -10,
-            "X": 10
+            "X": 15
           }
         },
         "ESCALATE": {
@@ -1118,14 +787,10 @@
       },
       "best": "TRUST (pay via the normal process)",
       "bestDecision": "TRUST",
-      "acceptableDecisions": [
-        "TRUST",
-        "VERIFY"
-      ],
       "learn": "Not everything is an attack. A known supplier, normal channel, unchanged details and a matching PO are signs it’s genuine — and paying on time matters too."
     },
     {
-      "id": 20,
+      "id": 17,
       "category": "DEVICE",
       "categoryLabel": "Devices & Tech",
       "color": "#0f766e",
@@ -1148,12 +813,8 @@
         "REPORT": {
           "text": "You report it as phishing. Security spends time confirming their own genuine notice.",
           "deltas": {
-            "X": 10
+            "X": 15
           }
-        },
-        "IGNORE": {
-          "text": "No action was needed anyway — no harm done.",
-          "deltas": {}
         },
         "ESCALATE": {
           "text": "You escalate a routine notice. Unnecessary, but harmless.",
@@ -1164,14 +825,10 @@
       },
       "best": "TRUST (no links, no credentials, official channel)",
       "bestDecision": "TRUST",
-      "acceptableDecisions": [
-        "TRUST",
-        "VERIFY"
-      ],
       "learn": "Real IT messages come through official channels and never ask for passwords or urgent clicks. Spotting a genuine notice avoids alarm fatigue."
     },
     {
-      "id": 21,
+      "id": 18,
       "category": "PHYSICAL",
       "categoryLabel": "Physical & In-Person",
       "color": "#8a5a2b",
@@ -1194,13 +851,7 @@
         "REPORT": {
           "text": "They report their own legitimate onboarding. Awkward, and it stalls their setup.",
           "deltas": {
-            "X": 10
-          }
-        },
-        "IGNORE": {
-          "text": "They put it off. Their own payroll setup is delayed.",
-          "deltas": {
-            "X": 10
+            "X": 15
           }
         },
         "ESCALATE": {
@@ -1212,14 +863,10 @@
       },
       "best": "TRUST (in person, official system, no links)",
       "bestDecision": "TRUST",
-      "acceptableDecisions": [
-        "TRUST",
-        "VERIFY"
-      ],
       "learn": "Compare this with the fake ‘confirm your bank details’ email: official system, in person, no links. Context separates real from fake."
     },
     {
-      "id": 22,
+      "id": 19,
       "category": "EMAIL",
       "categoryLabel": "Email & Messages",
       "color": "#1e5fa8",
@@ -1248,13 +895,6 @@
             "X": 5
           }
         },
-        "IGNORE": {
-          "text": "You leave a legitimate request hanging. The customer’s experience suffers.",
-          "deltas": {
-            "R": -10,
-            "X": 5
-          }
-        },
         "ESCALATE": {
           "text": "You pass a routine, verified request up the line. Slower service than needed.",
           "deltas": {
@@ -1264,62 +904,10 @@
       },
       "best": "TRUST (identity verified through the official portal)",
       "bestDecision": "TRUST",
-      "acceptableDecisions": [
-        "TRUST",
-        "VERIFY"
-      ],
       "learn": "Security shouldn’t block legitimate service. Verified identity through an official channel means you can help with confidence."
     },
     {
-      "id": 23,
-      "category": "DEVICE",
-      "categoryLabel": "Devices & Tech",
-      "color": "#0f766e",
-      "type": "Sanctioned Tool",
-      "title": "A Tool to Try",
-      "targets": "Anyone",
-      "text": "A teammate suggests a tool to tidy up a client list. You check, and it’s already on IT’s approved-software list.",
-      "legitimacy": "legitimate",
-      "outcomes": {
-        "TRUST": {
-          "text": "You use the approved tool. Work gets done and the data stays within sanctioned systems.",
-          "deltas": {}
-        },
-        "VERIFY": {
-          "text": "You confirm it’s on the approved list first — exactly the right check.",
-          "deltas": {
-            "S": 5
-          }
-        },
-        "REPORT": {
-          "text": "You report an already-approved tool. A quick dead end for security.",
-          "deltas": {
-            "X": 5
-          }
-        },
-        "IGNORE": {
-          "text": "You avoid a perfectly safe, approved tool and do it the slow way.",
-          "deltas": {
-            "X": 5
-          }
-        },
-        "ESCALATE": {
-          "text": "Unnecessary — it’s already sanctioned.",
-          "deltas": {
-            "X": 5
-          }
-        }
-      },
-      "best": "VERIFY it’s approved, then use it",
-      "bestDecision": "VERIFY",
-      "acceptableDecisions": [
-        "VERIFY",
-        "TRUST"
-      ],
-      "learn": "The rule isn’t ‘never use online tools’ — it’s ‘use approved ones.’ Knowing what’s sanctioned is the skill."
-    },
-    {
-      "id": 24,
+      "id": 20,
       "category": "EMAIL",
       "categoryLabel": "Email & Messages",
       "color": "#1e5fa8",
@@ -1344,14 +932,7 @@
           "text": "You report your own manager’s normal request. Confusing for everyone.",
           "deltas": {
             "R": -5,
-            "X": 10
-          }
-        },
-        "IGNORE": {
-          "text": "You ignore a reasonable ask from your manager. Not a great look.",
-          "deltas": {
-            "R": -5,
-            "X": 5
+            "X": 15
           }
         },
         "ESCALATE": {
@@ -1363,14 +944,10 @@
       },
       "best": "TRUST (normal channel, normal request, nothing sensitive)",
       "bestDecision": "TRUST",
-      "acceptableDecisions": [
-        "TRUST",
-        "VERIFY"
-      ],
       "learn": "Constant suspicion of normal requests grinds work to a halt. Save verification for the red flags: urgency, secrecy, sensitive data, or an unusual channel."
     },
     {
-      "id": 25,
+      "id": 21,
       "category": "MONEY",
       "categoryLabel": "Money & Payments",
       "color": "#b5292f",
@@ -1383,8 +960,8 @@
         "TRUST": {
           "text": "You pay it as-is. The figure was padded from a compromised supplier mailbox — partly avoidable.",
           "deltas": {
-            "M": -15,
-            "X": 10
+            "M": -20,
+            "X": 15
           }
         },
         "VERIFY": {
@@ -1399,13 +976,6 @@
             "X": 5
           }
         },
-        "IGNORE": {
-          "text": "You sit on it. If it was genuine, the supplier is now chasing you.",
-          "deltas": {
-            "R": -5,
-            "X": 5
-          }
-        },
         "ESCALATE": {
           "text": "You route it for a second approval — reasonable for an unusual amount.",
           "deltas": {
@@ -1415,15 +985,10 @@
       },
       "best": "VERIFY — one quick call resolves the doubt",
       "bestDecision": "VERIFY",
-      "acceptableDecisions": [
-        "VERIFY",
-        "REPORT",
-        "ESCALATE"
-      ],
       "learn": "When something is mostly normal but one detail is off (amount, tone, urgency), a 30-second check beats both blindly paying and crying fraud."
     },
     {
-      "id": 26,
+      "id": 22,
       "category": "SOCIAL",
       "categoryLabel": "Social & Online",
       "color": "#b83280",
@@ -1450,10 +1015,6 @@
             "X": 5
           }
         },
-        "IGNORE": {
-          "text": "You ignore it. Safe, though you might pass up a real opportunity.",
-          "deltas": {}
-        },
         "ESCALATE": {
           "text": "Not really an escalation matter.",
           "deltas": {
@@ -1463,15 +1024,10 @@
       },
       "best": "VERIFY (check the profile and company first)",
       "bestDecision": "VERIFY",
-      "acceptableDecisions": [
-        "VERIFY",
-        "REPORT",
-        "ESCALATE"
-      ],
       "learn": "Not malicious by default, not safe by default. Verify the source before handing over personal information."
     },
     {
-      "id": 27,
+      "id": 23,
       "category": "DEVICE",
       "categoryLabel": "Devices & Tech",
       "color": "#0f766e",
@@ -1484,8 +1040,8 @@
         "TRUST": {
           "text": "You type your password straight into the popup. If it was fake, it’s now stolen.",
           "deltas": {
-            "S": -10,
-            "X": 10
+            "S": -15,
+            "X": 15
           }
         },
         "VERIFY": {
@@ -1500,12 +1056,6 @@
             "X": 5
           }
         },
-        "IGNORE": {
-          "text": "You dismiss it and can’t use the app until you sign in.",
-          "deltas": {
-            "X": 5
-          }
-        },
         "ESCALATE": {
           "text": "You ask IT — fine, if a touch slow.",
           "deltas": {
@@ -1515,15 +1065,10 @@
       },
       "best": "VERIFY (sign in through the app yourself, not the popup)",
       "bestDecision": "VERIFY",
-      "acceptableDecisions": [
-        "VERIFY",
-        "REPORT",
-        "ESCALATE"
-      ],
       "learn": "Re-auth prompts are often real — but only ever enter credentials somewhere you navigated to yourself."
     },
     {
-      "id": 28,
+      "id": 24,
       "category": "EMAIL",
       "categoryLabel": "Email & Messages",
       "color": "#1e5fa8",
@@ -1536,8 +1081,8 @@
         "TRUST": {
           "text": "You click it. Their account had been hijacked and the link was malicious — partly avoidable.",
           "deltas": {
-            "S": -10,
-            "X": 10
+            "S": -15,
+            "X": 15
           }
         },
         "VERIFY": {
@@ -1552,12 +1097,6 @@
             "X": 5
           }
         },
-        "IGNORE": {
-          "text": "You skip it. Safe, but you might miss real work.",
-          "deltas": {
-            "X": 5
-          }
-        },
         "ESCALATE": {
           "text": "You loop in IT — a bit much before a simple check.",
           "deltas": {
@@ -1567,261 +1106,10 @@
       },
       "best": "VERIFY (a quick ‘did you send this?’)",
       "bestDecision": "VERIFY",
-      "acceptableDecisions": [
-        "VERIFY",
-        "REPORT",
-        "ESCALATE"
-      ],
       "learn": "Even real colleagues get hijacked. A two-second check before clicking an unexpected link costs nothing."
     },
     {
-      "id": 29,
-      "category": "EMAIL",
-      "categoryLabel": "Email & Messages",
-      "color": "#1e5fa8",
-      "type": "Hoax",
-      "title": "Forward to Everyone",
-      "targets": "Anyone",
-      "text": "A well-meaning colleague forwards you a warning: “URGENT — forward this to everyone or Microsoft will shut our email down tomorrow!” It’s a classic chain-mail hoax.",
-      "legitimacy": "malicious",
-      "outcomes": {
-        "TRUST": {
-          "text": "You forward it company-wide. Now everyone’s inbox carries the panic.",
-          "deltas": {
-            "R": -5,
-            "X": 10
-          }
-        },
-        "VERIFY": {
-          "text": "You spend time ‘checking’ an obvious hoax. Harmless, but wasted effort.",
-          "deltas": {
-            "X": 5
-          }
-        },
-        "REPORT": {
-          "text": "You raise a security ticket for a harmless chain email. Minor noise.",
-          "deltas": {
-            "X": 5
-          }
-        },
-        "IGNORE": {
-          "text": "You delete it and don’t pass it on. The hoax stops with you.",
-          "deltas": {}
-        },
-        "ESCALATE": {
-          "text": "You escalate a hoax to management. Overkill.",
-          "deltas": {
-            "X": 5
-          }
-        }
-      },
-      "best": "IGNORE (don’t forward it)",
-      "bestDecision": "IGNORE",
-      "acceptableDecisions": [
-        "IGNORE",
-        "VERIFY",
-        "REPORT"
-      ],
-      "learn": "Hoaxes survive by being forwarded. Don’t pass them on, don’t panic — just delete."
-    },
-    {
-      "id": 30,
-      "category": "EMAIL",
-      "categoryLabel": "Email & Messages",
-      "color": "#1e5fa8",
-      "type": "Marketing Spam",
-      "title": "Book a Demo",
-      "targets": "Anyone",
-      "text": "An unsolicited but genuine-looking email from a software vendor wants to book a demo and sell you their product. It’s not a scam — just spam you didn’t ask for.",
-      "legitimacy": "legitimate",
-      "outcomes": {
-        "TRUST": {
-          "text": "You engage, and invite a steady stream of follow-up spam.",
-          "deltas": {
-            "X": 5
-          }
-        },
-        "VERIFY": {
-          "text": "You research a cold sales email. Time you won’t get back.",
-          "deltas": {
-            "X": 5
-          }
-        },
-        "REPORT": {
-          "text": "You report marketing spam as phishing. Security checks it, finds nothing, and your real reports look less urgent.",
-          "deltas": {
-            "X": 5
-          }
-        },
-        "IGNORE": {
-          "text": "You delete it (or unsubscribe). Done — it was never a security matter.",
-          "deltas": {}
-        },
-        "ESCALATE": {
-          "text": "You escalate junk mail. Unnecessary.",
-          "deltas": {
-            "X": 5
-          }
-        }
-      },
-      "best": "IGNORE (just delete or unsubscribe)",
-      "bestDecision": "IGNORE",
-      "acceptableDecisions": [
-        "IGNORE",
-        "TRUST"
-      ],
-      "learn": "Not every unwanted email is an attack. Marketing spam gets deleted or unsubscribed — it’s not a security incident."
-    },
-    {
-      "id": 31,
-      "category": "SOCIAL",
-      "categoryLabel": "Social & Online",
-      "color": "#b83280",
-      "type": "Public Troll",
-      "title": "The Rude Comment",
-      "targets": "Salesperson / Admin",
-      "text": "On the company’s public social account, an anonymous user posts a rude, baiting comment clearly designed to provoke a reaction.",
-      "legitimacy": "ambiguous",
-      "outcomes": {
-        "TRUST": {
-          "text": "You fire back in public. The argument escalates and reflects badly on the brand.",
-          "deltas": {
-            "R": -10,
-            "X": 10
-          }
-        },
-        "VERIFY": {
-          "text": "There’s nothing here to verify.",
-          "deltas": {
-            "X": 5
-          }
-        },
-        "REPORT": {
-          "text": "You report a single rude comment as a security threat — it isn’t one.",
-          "deltas": {
-            "X": 5
-          }
-        },
-        "IGNORE": {
-          "text": "You don’t take the bait. With no audience, the comment fizzles out.",
-          "deltas": {}
-        },
-        "ESCALATE": {
-          "text": "You escalate a one-off troll to comms. Save that for real harassment or impersonation.",
-          "deltas": {
-            "X": 5
-          }
-        }
-      },
-      "best": "IGNORE (don’t feed the troll)",
-      "bestDecision": "IGNORE",
-      "acceptableDecisions": [
-        "IGNORE",
-        "VERIFY"
-      ],
-      "learn": "Public trolls want a reaction. Don’t engage — escalate only if it turns into harassment or impersonation."
-    },
-    {
-      "id": 32,
-      "category": "SOCIAL",
-      "categoryLabel": "Social & Online",
-      "color": "#b83280",
-      "type": "Random Request",
-      "title": "A Stranger Wants to Connect",
-      "targets": "Anyone",
-      "text": "You get a connection request from someone you don’t know — no mutual contacts, a thin generic profile. It isn’t impersonating anyone; it’s just a stranger.",
-      "legitimacy": "ambiguous",
-      "outcomes": {
-        "TRUST": {
-          "text": "You accept and chat freely, handing a stranger a window into your work life.",
-          "deltas": {
-            "S": -5,
-            "X": 5
-          }
-        },
-        "VERIFY": {
-          "text": "You investigate a random request at length. Disproportionate.",
-          "deltas": {
-            "X": 5
-          }
-        },
-        "REPORT": {
-          "text": "You report an ordinary stranger as a threat. False alarm.",
-          "deltas": {
-            "X": 5
-          }
-        },
-        "IGNORE": {
-          "text": "You leave it or decline. No harm, no fuss.",
-          "deltas": {}
-        },
-        "ESCALATE": {
-          "text": "You escalate a connection request. Overkill.",
-          "deltas": {
-            "X": 5
-          }
-        }
-      },
-      "best": "IGNORE (just decline)",
-      "bestDecision": "IGNORE",
-      "acceptableDecisions": [
-        "IGNORE",
-        "VERIFY"
-      ],
-      "learn": "A stranger’s request isn’t a threat to report — decline or ignore it. Save caution for accounts impersonating real people."
-    },
-    {
-      "id": 33,
-      "category": "EMAIL",
-      "categoryLabel": "Email & Messages",
-      "color": "#1e5fa8",
-      "type": "Junk Scam",
-      "title": "You’ve Won!",
-      "targets": "Anyone",
-      "text": "An email already sitting in your junk folder shouts: “CONGRATULATIONS!!! You’ve WON $1,000,000 in a lottery you never entered. Claim within 24 hours!” It’s riddled with typos.",
-      "legitimacy": "malicious",
-      "outcomes": {
-        "TRUST": {
-          "text": "You click through and start handing over details on a scam page.",
-          "deltas": {
-            "S": -10,
-            "X": 10
-          }
-        },
-        "VERIFY": {
-          "text": "You waste time ‘checking’ a lottery you never entered.",
-          "deltas": {
-            "X": 5
-          }
-        },
-        "REPORT": {
-          "text": "You file a ticket for junk the filter already caught. Save reporting for convincing, targeted messages.",
-          "deltas": {
-            "X": 5
-          }
-        },
-        "IGNORE": {
-          "text": "You delete it. Obvious junk, already filtered — no ticket needed.",
-          "deltas": {}
-        },
-        "ESCALATE": {
-          "text": "You escalate obvious spam. No need.",
-          "deltas": {
-            "X": 5
-          }
-        }
-      },
-      "best": "IGNORE (just delete it)",
-      "bestDecision": "IGNORE",
-      "acceptableDecisions": [
-        "IGNORE",
-        "VERIFY",
-        "REPORT"
-      ],
-      "learn": "Obvious junk that’s already in spam doesn’t need a ticket — delete it. Reserve reporting for messages that look targeted or convincing."
-    },
-    {
-      "id": 34,
+      "id": 25,
       "category": "VOICE",
       "categoryLabel": "Phone & Voice",
       "color": "#6b3fa0",
@@ -1834,8 +1122,8 @@
         "TRUST": {
           "text": "You comment on the company’s behalf without authority — your words become the story.",
           "deltas": {
-            "R": -15,
-            "X": 10
+            "R": -20,
+            "X": 15
           }
         },
         "VERIFY": {
@@ -1850,13 +1138,6 @@
             "X": 5
           }
         },
-        "IGNORE": {
-          "text": "You brush them off and tell nobody. Leadership is blindsided when it runs.",
-          "deltas": {
-            "R": -5,
-            "X": 5
-          }
-        },
         "ESCALATE": {
           "text": "You take a message and pass it straight to management / comms. Exactly right.",
           "deltas": {
@@ -1866,15 +1147,10 @@
       },
       "best": "ESCALATE (to management / comms)",
       "bestDecision": "ESCALATE",
-      "acceptableDecisions": [
-        "ESCALATE",
-        "VERIFY",
-        "REPORT"
-      ],
       "learn": "Press, legal and regulator questions go straight to management — never improvise on the company’s behalf, and never just sit on them."
     },
     {
-      "id": 35,
+      "id": 26,
       "category": "EMAIL",
       "categoryLabel": "Email & Messages",
       "color": "#1e5fa8",
@@ -1887,9 +1163,9 @@
         "TRUST": {
           "text": "Even though it’s genuine, you release customer data on your own authority — a serious overstep.",
           "deltas": {
-            "R": -10,
-            "S": -10,
-            "X": 10
+            "R": -15,
+            "S": -15,
+            "X": 15
           }
         },
         "VERIFY": {
@@ -1904,13 +1180,6 @@
             "X": 5
           }
         },
-        "IGNORE": {
-          "text": "You sit on a legitimate regulator request. That invites real trouble.",
-          "deltas": {
-            "R": -10,
-            "X": 10
-          }
-        },
         "ESCALATE": {
           "text": "You route it to management / legal / your data-protection lead for sign-off. Correct.",
           "deltas": {
@@ -1920,15 +1189,10 @@
       },
       "best": "ESCALATE (for the right sign-off)",
       "bestDecision": "ESCALATE",
-      "acceptableDecisions": [
-        "ESCALATE",
-        "VERIFY",
-        "REPORT"
-      ],
       "learn": "Even a legitimate request for sensitive data needs proper authorisation. Confirm it’s real, then escalate — don’t release data solo."
     },
     {
-      "id": 36,
+      "id": 27,
       "category": "DEVICE",
       "categoryLabel": "Devices & Tech",
       "color": "#0f766e",
@@ -1941,7 +1205,7 @@
         "TRUST": {
           "text": "You decide it’s none of your business — and quietly condone the risk.",
           "deltas": {
-            "S": -10
+            "S": -15
           }
         },
         "VERIFY": {
@@ -1956,13 +1220,6 @@
             "X": 5
           }
         },
-        "IGNORE": {
-          "text": "You let it slide. The data keeps leaving the company unprotected.",
-          "deltas": {
-            "S": -10,
-            "X": 10
-          }
-        },
         "ESCALATE": {
           "text": "You raise it calmly with your manager / security, so it’s handled and the person gets support.",
           "deltas": {
@@ -1972,15 +1229,10 @@
       },
       "best": "ESCALATE (raise it through the right channel)",
       "bestDecision": "ESCALATE",
-      "acceptableDecisions": [
-        "ESCALATE",
-        "VERIFY",
-        "REPORT"
-      ],
       "learn": "Insider mistakes are a people problem, not a phishing report. Raise them through your manager or security so they’re handled constructively."
     },
     {
-      "id": 37,
+      "id": 28,
       "category": "DEVICE",
       "categoryLabel": "Devices & Tech",
       "color": "#0f766e",
@@ -1993,8 +1245,8 @@
         "TRUST": {
           "text": "You hand over broad admin access with no review — a real exposure, however well-meant.",
           "deltas": {
-            "S": -15,
-            "X": 10
+            "S": -20,
+            "X": 15
           }
         },
         "VERIFY": {
@@ -2009,13 +1261,6 @@
             "X": 5
           }
         },
-        "IGNORE": {
-          "text": "You quietly block a legitimate-looking request and stall the new manager’s work.",
-          "deltas": {
-            "R": -5,
-            "X": 10
-          }
-        },
         "ESCALATE": {
           "text": "You route it to the system owner for a least-privilege review and approval. Exactly how big grants should work.",
           "deltas": {
@@ -2025,15 +1270,10 @@
       },
       "best": "ESCALATE (for least-privilege approval)",
       "bestDecision": "ESCALATE",
-      "acceptableDecisions": [
-        "ESCALATE",
-        "VERIFY",
-        "REPORT"
-      ],
       "learn": "Genuine-looking, high-impact requests still need the right approval. Escalate big access grants for review rather than granting — or blocking — them yourself."
     },
     {
-      "id": 38,
+      "id": 29,
       "category": "MONEY",
       "categoryLabel": "Money & Payments",
       "color": "#b5292f",
@@ -2046,8 +1286,8 @@
         "TRUST": {
           "text": "You engage and arrange payment alone — funding a criminal with no guarantee of anything.",
           "deltas": {
-            "M": -20,
-            "X": 15
+            "M": -30,
+            "X": 20
           }
         },
         "VERIFY": {
@@ -2062,13 +1302,6 @@
             "X": 5
           }
         },
-        "IGNORE": {
-          "text": "You bury a credible threat against the company. If it’s real, nobody is ready.",
-          "deltas": {
-            "S": -10,
-            "X": 10
-          }
-        },
         "ESCALATE": {
           "text": "You take it straight to leadership and incident response. The right people respond as a team.",
           "deltas": {
@@ -2078,12 +1311,452 @@
       },
       "best": "ESCALATE (to leadership / incident response)",
       "bestDecision": "ESCALATE",
-      "acceptableDecisions": [
-        "ESCALATE",
-        "REPORT",
-        "VERIFY"
-      ],
       "learn": "A credible threat against the company goes to leadership and incident response fast — don’t pay, don’t negotiate, and don’t sit on it alone."
+    },
+    {
+      "id": 30,
+      "category": "DEVICE",
+      "categoryLabel": "Devices & Tech",
+      "color": "#0f766e",
+      "type": "Genuine IT Follow-up",
+      "title": "The Replacement Laptop",
+      "targets": "Anyone",
+      "text": "IT emails — referencing the support ticket you opened last week — to say your replacement laptop is ready. Bring your badge to the IT desk to collect it. No links, no password requested.",
+      "legitimacy": "legitimate",
+      "outcomes": {
+        "TRUST": {
+          "text": "You collect it from the IT desk. Sorted — it was your own ticket.",
+          "deltas": {
+            "S": 5
+          }
+        },
+        "VERIFY": {
+          "text": "You double-check with IT, who confirm what you already knew. Minor delay.",
+          "deltas": {
+            "X": 5
+          }
+        },
+        "REPORT": {
+          "text": "You report a reply to your own ticket as phishing. Security closes it as a false alarm.",
+          "deltas": {
+            "X": 5
+          }
+        },
+        "ESCALATE": {
+          "text": "You escalate a routine collection. Unnecessary.",
+          "deltas": {
+            "X": 5
+          }
+        }
+      },
+      "best": "TRUST (it references your own ticket and asks for nothing)",
+      "bestDecision": "TRUST",
+      "learn": "A message that follows up on something you started, and asks for no credentials, is a strong sign it’s genuine."
+    },
+    {
+      "id": 31,
+      "category": "EMAIL",
+      "categoryLabel": "Email & Messages",
+      "color": "#1e5fa8",
+      "type": "Routine Invite",
+      "title": "The Project Invite",
+      "targets": "Anyone",
+      "text": "A meeting invite arrives from a teammate you work with daily, for the project you’re both on, at a normal time, from their usual address, with the standard Teams link.",
+      "legitimacy": "legitimate",
+      "outcomes": {
+        "TRUST": {
+          "text": "You accept and join. A normal invite for real work.",
+          "deltas": {}
+        },
+        "VERIFY": {
+          "text": "You quiz your teammate about a routine invite. Safe, but it slows you both down.",
+          "deltas": {
+            "X": 5
+          }
+        },
+        "REPORT": {
+          "text": "You report a colleague’s normal meeting invite. Confusing for everyone.",
+          "deltas": {
+            "R": -5,
+            "X": 5
+          }
+        },
+        "ESCALATE": {
+          "text": "You escalate a calendar invite. Overkill.",
+          "deltas": {
+            "X": 5
+          }
+        }
+      },
+      "best": "TRUST (known colleague, real project, normal channel)",
+      "bestDecision": "TRUST",
+      "learn": "Reserve suspicion for unexpected links from unexpected people — routine invites from known colleagues are just work."
+    },
+    {
+      "id": 32,
+      "category": "MONEY",
+      "categoryLabel": "Money & Payments",
+      "color": "#b5292f",
+      "type": "Genuine Approval",
+      "title": "The Approved Expense",
+      "targets": "Anyone",
+      "text": "Finance emails from the internal finance address, through the expense system you always use, to say your travel claim is approved and will be paid on Friday.",
+      "legitimacy": "legitimate",
+      "outcomes": {
+        "TRUST": {
+          "text": "You note it and carry on. Correct — it’s your own claim, through the right system.",
+          "deltas": {}
+        },
+        "VERIFY": {
+          "text": "You check with finance about your own approved claim. Harmless, slightly wasteful.",
+          "deltas": {
+            "X": 5
+          }
+        },
+        "REPORT": {
+          "text": "You report finance’s genuine approval as fraud. They’re unimpressed.",
+          "deltas": {
+            "X": 5
+          }
+        },
+        "ESCALATE": {
+          "text": "You escalate a routine approval. No need.",
+          "deltas": {
+            "X": 5
+          }
+        }
+      },
+      "best": "TRUST (your own claim, internal system)",
+      "bestDecision": "TRUST",
+      "learn": "Confirmations of things you initiated, through the systems you already use, are normal — not every money email is fraud."
+    },
+    {
+      "id": 33,
+      "category": "MONEY",
+      "categoryLabel": "Money & Payments",
+      "color": "#b5292f",
+      "type": "Unchanged Details",
+      "title": "The Matching Bank Details",
+      "targets": "Finance Officer",
+      "text": "A supplier emails to confirm the bank details for an upcoming payment. You compare them: they exactly match what’s already on file. Nothing is being changed.",
+      "legitimacy": "legitimate",
+      "outcomes": {
+        "TRUST": {
+          "text": "You proceed using the on-file details. Correct — nothing changed, no fraud signal.",
+          "deltas": {}
+        },
+        "VERIFY": {
+          "text": "You call to confirm details that already match the file. Prudent, but it delays a clean payment.",
+          "deltas": {
+            "X": 5
+          }
+        },
+        "REPORT": {
+          "text": "You raise fraud where nothing changed. Security finds nothing; the supplier waits.",
+          "deltas": {
+            "R": -5,
+            "X": 5
+          }
+        },
+        "ESCALATE": {
+          "text": "You escalate a routine, unchanged payment. Slower than it needed to be.",
+          "deltas": {
+            "X": 5
+          }
+        }
+      },
+      "best": "TRUST (details match the file; nothing changed)",
+      "bestDecision": "TRUST",
+      "learn": "The fraud signal is a *change* of details under pressure. Matching, on-file details with no change request are normal — don’t freeze every payment."
+    },
+    {
+      "id": 34,
+      "category": "EMAIL",
+      "categoryLabel": "Email & Messages",
+      "color": "#1e5fa8",
+      "type": "Genuine Internal Email",
+      "title": "The Training Reminder",
+      "targets": "Anyone",
+      "text": "An internal email from your security team reminds everyone to finish annual training by month-end. It links to the internal training portal on your company domain that you’ve used before.",
+      "legitimacy": "legitimate",
+      "outcomes": {
+        "TRUST": {
+          "text": "You complete the training via the portal you know. Done.",
+          "deltas": {
+            "S": 5
+          }
+        },
+        "VERIFY": {
+          "text": "You confirm the link — it’s the internal portal. Fine.",
+          "deltas": {}
+        },
+        "REPORT": {
+          "text": "You report your own security team’s reminder. They sigh.",
+          "deltas": {
+            "X": 5
+          }
+        },
+        "ESCALATE": {
+          "text": "You escalate a training nudge. Unnecessary.",
+          "deltas": {
+            "X": 5
+          }
+        }
+      },
+      "best": "TRUST (internal portal you already use)",
+      "bestDecision": "TRUST",
+      "learn": "Genuine internal comms use internal systems you recognise — learn to tell them from look-alikes rather than flagging everything."
+    },
+    {
+      "id": 35,
+      "category": "EMAIL",
+      "categoryLabel": "Email & Messages",
+      "color": "#1e5fa8",
+      "type": "Look-alike Phishing",
+      "title": "The Shared Document",
+      "targets": "Anyone",
+      "text": "An email looks like a ‘document shared with you’ notice — ‘Q3 Budget’ from a name close to a colleague’s. But the sharing address is an outside domain and the link leaves your company’s systems.",
+      "legitimacy": "malicious",
+      "outcomes": {
+        "TRUST": {
+          "text": "You sign in to ‘view’ it. Your credentials are captured on a look-alike page.",
+          "deltas": {
+            "S": -30,
+            "X": 20
+          }
+        },
+        "VERIFY": {
+          "text": "You hover the link and check with the colleague — they never shared it.",
+          "deltas": {
+            "S": 5
+          }
+        },
+        "REPORT": {
+          "text": "You report it; the look-alike sender is blocked before others fall for it.",
+          "deltas": {
+            "S": 10,
+            "X": -5
+          }
+        },
+        "ESCALATE": {
+          "text": "You loop in a manager — fine, though reporting is the faster path.",
+          "deltas": {
+            "X": 5
+          }
+        }
+      },
+      "best": "REPORT (off-platform link from an outside domain)",
+      "bestDecision": "REPORT",
+      "learn": "Fake ‘shared a document’ notices copy the real ones. Check the sender domain and where the link goes — when it’s external, report it."
+    },
+    {
+      "id": 36,
+      "category": "MONEY",
+      "categoryLabel": "Money & Payments",
+      "color": "#b5292f",
+      "type": "Fraud on a Real Name",
+      "title": "The Half-Familiar Invoice",
+      "targets": "Finance Officer",
+      "text": "An invoice references a real supplier and a real project — but you never ordered this, and the PO number matches no order on file. It’s a fake riding on a genuine relationship.",
+      "legitimacy": "malicious",
+      "outcomes": {
+        "TRUST": {
+          "text": "You pay it. The money goes to a fraudster trading on a real supplier’s name.",
+          "deltas": {
+            "M": -35,
+            "R": -15,
+            "X": 20
+          }
+        },
+        "VERIFY": {
+          "text": "You check the PO and find no matching order. Good catch.",
+          "deltas": {
+            "S": 5
+          }
+        },
+        "REPORT": {
+          "text": "You report the fraud pattern so colleagues hit by the same scam are warned.",
+          "deltas": {
+            "S": 10,
+            "X": -5
+          }
+        },
+        "ESCALATE": {
+          "text": "You raise it with finance leadership — reasonable for suspected fraud.",
+          "deltas": {
+            "S": 5
+          }
+        }
+      },
+      "best": "REPORT (no matching PO — warn others)",
+      "bestDecision": "REPORT",
+      "learn": "Fake invoices latch onto real supplier names; a missing or wrong PO is the tell. Report it so the campaign is flagged for everyone."
+    },
+    {
+      "id": 37,
+      "category": "EMAIL",
+      "categoryLabel": "Email & Messages",
+      "color": "#1e5fa8",
+      "type": "Confidential Disclosure",
+      "title": "The Partner’s Question",
+      "targets": "Executive / Admin",
+      "text": "Someone from a partner company asks — plausibly and politely — for confidential details of the upcoming deal ‘so we can prepare our side.’ You’re not sure what’s been agreed or who’s cleared to share it.",
+      "legitimacy": "ambiguous",
+      "outcomes": {
+        "TRUST": {
+          "text": "You share the deal details. Confidential terms leak before anything’s authorised.",
+          "deltas": {
+            "R": -20,
+            "S": -15,
+            "X": 20
+          }
+        },
+        "VERIFY": {
+          "text": "You confirm the person is real — but the real question is whether you’re allowed to disclose at all.",
+          "deltas": {
+            "X": 5
+          }
+        },
+        "REPORT": {
+          "text": "A phishing ticket doesn’t fit — this is a disclosure-authority question.",
+          "deltas": {
+            "X": 5
+          }
+        },
+        "ESCALATE": {
+          "text": "You route it to the deal owner / management to decide what can be shared. Right call.",
+          "deltas": {
+            "S": 5
+          }
+        }
+      },
+      "best": "ESCALATE (disclosure isn’t yours to authorise)",
+      "bestDecision": "ESCALATE",
+      "learn": "Confidential business information needs the owner’s decision — escalate, even when the person asking is genuine."
+    },
+    {
+      "id": 38,
+      "category": "PHYSICAL",
+      "categoryLabel": "Physical & In-Person",
+      "color": "#8a5a2b",
+      "type": "Whistleblowing",
+      "title": "The Quiet Word",
+      "targets": "Anyone",
+      "text": "A colleague quietly tells you they think a manager is fudging the numbers, and asks you to keep it strictly between you two.",
+      "legitimacy": "ambiguous",
+      "outcomes": {
+        "TRUST": {
+          "text": "You agree to keep it secret and do nothing. Possible fraud goes unaddressed — and now you’re sitting on it.",
+          "deltas": {
+            "S": -15,
+            "R": -5,
+            "X": 15
+          }
+        },
+        "VERIFY": {
+          "text": "You start digging into the manager yourself — not your role, and risky.",
+          "deltas": {
+            "X": 15
+          }
+        },
+        "REPORT": {
+          "text": "A security ticket isn’t the right channel for suspected fraud.",
+          "deltas": {
+            "X": 5
+          }
+        },
+        "ESCALATE": {
+          "text": "You raise it through the proper escalation / whistleblowing channel, in confidence.",
+          "deltas": {
+            "S": 5
+          }
+        }
+      },
+      "best": "ESCALATE (through the whistleblowing channel)",
+      "bestDecision": "ESCALATE",
+      "learn": "Suspected wrongdoing goes through the proper confidential channel — don’t investigate it yourself, and don’t bury it."
+    },
+    {
+      "id": 39,
+      "category": "MONEY",
+      "categoryLabel": "Money & Payments",
+      "color": "#b5292f",
+      "type": "Beyond Your Authority",
+      "title": "The Angry Refund",
+      "targets": "Salesperson / Admin",
+      "text": "A long-standing customer furiously demands a refund far above your approval limit and threatens to ‘post about it everywhere’ if you don’t act now. Their grievance may well be genuine.",
+      "legitimacy": "ambiguous",
+      "outcomes": {
+        "TRUST": {
+          "text": "You approve the large refund on the spot — well beyond your authority.",
+          "deltas": {
+            "M": -20,
+            "X": 15
+          }
+        },
+        "VERIFY": {
+          "text": "You confirm the order details — useful, but the sticking point is the amount, not the facts.",
+          "deltas": {
+            "X": 5
+          }
+        },
+        "REPORT": {
+          "text": "This isn’t a security report; it’s an authority and service call.",
+          "deltas": {
+            "X": 5
+          }
+        },
+        "ESCALATE": {
+          "text": "You bring in a manager who can actually authorise that amount. Right move.",
+          "deltas": {
+            "R": 5
+          }
+        }
+      },
+      "best": "ESCALATE (it’s above your limit)",
+      "bestDecision": "ESCALATE",
+      "learn": "Requests beyond your authority — especially with pressure or threats attached — go to someone who can actually decide."
+    },
+    {
+      "id": 40,
+      "category": "DEVICE",
+      "categoryLabel": "Devices & Tech",
+      "color": "#0f766e",
+      "type": "Offboarding Exception",
+      "title": "The Ghost Account",
+      "targets": "IT / Developer",
+      "text": "A manager asks you (in IT) to keep a just-departed employee’s login active ‘for a little while’ so the team can reach their files — skipping the normal offboarding.",
+      "legitimacy": "ambiguous",
+      "outcomes": {
+        "TRUST": {
+          "text": "You leave the account live. A departed user’s access lingers as a standing risk.",
+          "deltas": {
+            "S": -20,
+            "X": 15
+          }
+        },
+        "VERIFY": {
+          "text": "You confirm the manager really asked — but the issue is the policy exception, not who asked.",
+          "deltas": {
+            "X": 5
+          }
+        },
+        "REPORT": {
+          "text": "It’s not a phishing report; it’s an offboarding decision.",
+          "deltas": {
+            "X": 5
+          }
+        },
+        "ESCALATE": {
+          "text": "You route it to security / HR for a proper data-handover and offboarding decision.",
+          "deltas": {
+            "S": 10
+          }
+        }
+      },
+      "best": "ESCALATE (offboarding is a security/HR call)",
+      "bestDecision": "ESCALATE",
+      "learn": "Offboarding exceptions are a security and HR decision — escalate rather than quietly keeping ghost accounts alive."
     }
   ],
   "roles": [
@@ -2139,83 +1812,153 @@
   ],
   "events": [
     {
-      "title": "IT Is Overloaded",
-      "text": "Any REPORT this round takes effect next round instead of now.",
-      "effect": null
-    },
-    {
-      "title": "The CEO Is on Vacation",
-      "text": "You can’t verify with the CEO this round: +5 Stress on any CEO-related scenario.",
-      "effect": null
-    },
-    {
-      "title": "Journalist Calls",
-      "text": "If Reputation is below 60, lose 5 more Reputation. Otherwise, no effect.",
-      "effect": null
-    },
-    {
-      "title": "Customer Complains Online",
-      "text": "Reputation −5 immediately.",
+      "title": "Phishing Wave",
+      "channel": "EMAIL",
+      "channelLabel": "Email & Messages",
+      "color": "#1e5fa8",
+      "text": "A phishing wave floods inboxes. For the next 3 incidents, a wrong answer on an Email & Messages card costs double.",
       "effect": {
-        "R": -5
+        "kind": "amplify",
+        "mult": 2,
+        "duration": 3
       }
     },
     {
-      "title": "Payday Rush",
-      "text": "Finance is slammed — the next money scenario adds +5 Stress.",
-      "effect": null
-    },
-    {
-      "title": "Audit Week",
-      "text": "Good security calls this round earn +5 extra Security Score.",
-      "effect": null
-    },
-    {
-      "title": "System Outage",
-      "text": "Everyone’s Stress +10.",
+      "title": "Finance Under Fire",
+      "channel": "MONEY",
+      "channelLabel": "Money & Payments",
+      "color": "#b5292f",
+      "text": "Fraudsters are hammering finance. For the next 3 incidents, a wrong answer on a Money & Payments card costs double.",
       "effect": {
-        "X": 10
+        "kind": "amplify",
+        "mult": 2,
+        "duration": 3
       }
     },
     {
-      "title": "Budget Cuts",
-      "text": "Funds −10.",
+      "title": "Scam-Call Run",
+      "channel": "VOICE",
+      "channelLabel": "Phone & Voice",
+      "color": "#6b3fa0",
+      "text": "A run of convincing scam calls. For the next 3 incidents, a wrong answer on a Phone & Voice card costs double.",
       "effect": {
-        "M": -10
+        "kind": "amplify",
+        "mult": 2,
+        "duration": 3
+      }
+    },
+    {
+      "title": "Visitor Day",
+      "channel": "PHYSICAL",
+      "channelLabel": "Physical & In-Person",
+      "color": "#8a5a2b",
+      "text": "The building is full of strangers. For the next 3 incidents, a wrong answer on a Physical card costs double.",
+      "effect": {
+        "kind": "amplify",
+        "mult": 2,
+        "duration": 3
+      }
+    },
+    {
+      "title": "Patch Backlog",
+      "channel": "DEVICE",
+      "channelLabel": "Devices & Tech",
+      "color": "#0f766e",
+      "text": "Systems are behind on updates. For the next 3 incidents, a wrong answer on a Devices & Tech card costs double.",
+      "effect": {
+        "kind": "amplify",
+        "mult": 2,
+        "duration": 3
+      }
+    },
+    {
+      "title": "In the Spotlight",
+      "channel": "SOCIAL",
+      "channelLabel": "Social & Online",
+      "color": "#b83280",
+      "text": "The brand is trending and watched. For the next 3 incidents, a wrong answer on a Social & Online card costs double.",
+      "effect": {
+        "kind": "amplify",
+        "mult": 2,
+        "duration": 3
+      }
+    },
+    {
+      "title": "Conference Season",
+      "channel": "MOBILE",
+      "channelLabel": "On the Go",
+      "color": "#c2710c",
+      "text": "Half the team is on the road. For the next 3 incidents, a wrong answer on an On-the-Go card costs double.",
+      "effect": {
+        "kind": "amplify",
+        "mult": 2,
+        "duration": 3
       }
     },
     {
       "title": "Awareness Training Done",
+      "channel": null,
+      "channelLabel": null,
+      "color": "#1e3a5f",
       "text": "Reward: Security +10 and Stress −5.",
       "effect": {
-        "S": 10,
-        "X": -5
+        "kind": "meter",
+        "deltas": {
+          "S": 10,
+          "X": -5
+        }
       }
     },
     {
-      "title": "Holiday Scam Surge",
-      "text": "Draw and resolve TWO scenario cards this round.",
-      "effect": null
+      "title": "Audit Week",
+      "channel": null,
+      "channelLabel": null,
+      "color": "#1e3a5f",
+      "text": "For the next 3 incidents, a correct answer earns +5 extra Security.",
+      "effect": {
+        "kind": "reward_best",
+        "amount": 5,
+        "duration": 3
+      }
     },
     {
-      "title": "Phishing Simulation",
-      "text": "Your own security team sends a test. Resolve the next scenario with no Funds penalty.",
-      "effect": null
+      "title": "Budget Approved",
+      "channel": null,
+      "channelLabel": null,
+      "color": "#1e3a5f",
+      "text": "Reward: Funds +15.",
+      "effect": {
+        "kind": "meter",
+        "deltas": {
+          "M": 15
+        }
+      }
     },
     {
-      "title": "New-Starter Week",
-      "text": "Every scenario this round targets the Intern / New Hire if possible.",
-      "effect": null
+      "title": "A Calm Stretch",
+      "channel": null,
+      "channelLabel": null,
+      "color": "#1e3a5f",
+      "text": "Reward: Stress −10.",
+      "effect": {
+        "kind": "meter",
+        "deltas": {
+          "X": -10
+        }
+      }
     },
     {
-      "title": "Backups Verified",
-      "text": "Reward: the next REPORT on a ransomware/malware scenario fully prevents it.",
-      "effect": null
-    },
-    {
-      "title": "VIP Visit",
-      "text": "Reputation is fragile — any TRUST mistake this round costs +5 extra Reputation.",
-      "effect": null
+      "title": "Board Review",
+      "channel": null,
+      "channelLabel": null,
+      "color": "#1e3a5f",
+      "text": "Leadership is under scrutiny: Reputation −10.",
+      "effect": {
+        "kind": "meter",
+        "deltas": {
+          "R": -10
+        }
+      }
     }
   ]
 }
