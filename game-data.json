@@ -3,7 +3,7 @@
     "title": "Human Firewall",
     "subtitle": "A cyber-awareness card game",
     "incidentsPerGame": 20,
-    "wrongAnswerPenalty": 1.75
+    "wrongAnswerPenalty": 1.25
   },
   "meters": {
     "R": {
@@ -157,6 +157,11 @@
       },
       "best": "REPORT (or VERIFY)",
       "bestDecision": "REPORT",
+      "acceptableDecisions": [
+        "REPORT",
+        "VERIFY",
+        "ESCALATE"
+      ],
       "learn": "Real providers never ask you to confirm a password through an email link — go to the site yourself, or report it."
     },
     {
@@ -209,6 +214,11 @@
       },
       "best": "ESCALATE / REPORT",
       "bestDecision": "ESCALATE",
+      "acceptableDecisions": [
+        "ESCALATE",
+        "VERIFY",
+        "REPORT"
+      ],
       "learn": "One leaked password unlocks everything if you reuse it — use unique passwords and a password manager."
     },
     {
@@ -259,6 +269,11 @@
       },
       "best": "REPORT",
       "bestDecision": "REPORT",
+      "acceptableDecisions": [
+        "REPORT",
+        "VERIFY",
+        "ESCALATE"
+      ],
       "learn": "Never approve a login prompt you didn’t start — repeated prompts are an attack. Deny and report."
     },
     {
@@ -306,6 +321,11 @@
       },
       "best": "REPORT",
       "bestDecision": "REPORT",
+      "acceptableDecisions": [
+        "REPORT",
+        "VERIFY",
+        "ESCALATE"
+      ],
       "learn": "A QR code hides where it really goes — don’t scan random ones in public; use the official app or site."
     },
     {
@@ -356,6 +376,11 @@
       },
       "best": "VERIFY (call a known number)",
       "bestDecision": "VERIFY",
+      "acceptableDecisions": [
+        "VERIFY",
+        "REPORT",
+        "ESCALATE"
+      ],
       "learn": "Always confirm changed bank details by calling a number you already trust — never the one on the invoice."
     },
     {
@@ -403,6 +428,11 @@
       },
       "best": "REPORT",
       "bestDecision": "REPORT",
+      "acceptableDecisions": [
+        "REPORT",
+        "VERIFY",
+        "ESCALATE"
+      ],
       "learn": "‘USB drop’ attacks bait your curiosity — never plug in a drive you found. Hand it to IT."
     },
     {
@@ -452,6 +482,11 @@
       },
       "best": "VERIFY (call back on a trusted number)",
       "bestDecision": "VERIFY",
+      "acceptableDecisions": [
+        "VERIFY",
+        "REPORT",
+        "ESCALATE"
+      ],
       "learn": "AI can clone a voice. Urgency + secrecy + money is the scam pattern — always verify on a known channel."
     },
     {
@@ -501,6 +536,11 @@
       },
       "best": "REPORT (and coach them)",
       "bestDecision": "REPORT",
+      "acceptableDecisions": [
+        "REPORT",
+        "VERIFY",
+        "ESCALATE"
+      ],
       "learn": "Badges, screens and ‘behind the scenes’ posts leak details attackers use. Think before you post."
     },
     {
@@ -550,6 +590,11 @@
       },
       "best": "REPORT (disconnect & call IT)",
       "bestDecision": "REPORT",
+      "acceptableDecisions": [
+        "REPORT",
+        "VERIFY",
+        "ESCALATE"
+      ],
       "learn": "Don’t pay and don’t panic — isolate the device and call IT. Good backups beat ransoms."
     },
     {
@@ -599,6 +644,11 @@
       },
       "best": "VERIFY, then REPORT",
       "bestDecision": "VERIFY",
+      "acceptableDecisions": [
+        "VERIFY",
+        "REPORT",
+        "ESCALATE"
+      ],
       "learn": "Even a trusted account can be hijacked — verify unusual data requests through another channel."
     },
     {
@@ -646,6 +696,11 @@
       },
       "best": "REPORT",
       "bestDecision": "REPORT",
+      "acceptableDecisions": [
+        "REPORT",
+        "VERIFY",
+        "ESCALATE"
+      ],
       "learn": "Impersonation accounts copy names and photos — verify identity before acting on ‘confidential’ asks."
     },
     {
@@ -694,6 +749,11 @@
       },
       "best": "VERIFY (call IT back yourself)",
       "bestDecision": "VERIFY",
+      "acceptableDecisions": [
+        "VERIFY",
+        "REPORT",
+        "ESCALATE"
+      ],
       "learn": "Real IT won’t cold-call you for remote access — hang up and call the number you already know."
     },
     {
@@ -740,6 +800,11 @@
       },
       "best": "VERIFY (send them to reception)",
       "bestDecision": "VERIFY",
+      "acceptableDecisions": [
+        "VERIFY",
+        "REPORT",
+        "ESCALATE"
+      ],
       "learn": "‘Tailgating’ bypasses all your tech security — everyone badges in, no exceptions, however polite."
     },
     {
@@ -786,6 +851,11 @@
       },
       "best": "VERIFY / ESCALATE with IT",
       "bestDecision": "VERIFY",
+      "acceptableDecisions": [
+        "VERIFY",
+        "REPORT",
+        "ESCALATE"
+      ],
       "learn": "Free ‘helpful’ tools can harvest your data — check with IT before uploading any company information."
     },
     {
@@ -832,6 +902,11 @@
       },
       "best": "REPORT (don’t enable content)",
       "bestDecision": "REPORT",
+      "acceptableDecisions": [
+        "REPORT",
+        "VERIFY",
+        "ESCALATE"
+      ],
       "learn": "‘Enable content’ on an unexpected document can run hidden malware — when in doubt, report it."
     },
     {
@@ -883,6 +958,11 @@
       },
       "best": "REPORT (fast, so IT can wipe it)",
       "bestDecision": "REPORT",
+      "acceptableDecisions": [
+        "REPORT",
+        "VERIFY",
+        "ESCALATE"
+      ],
       "learn": "Report lost devices immediately — a quick remote lock or wipe turns a disaster into a non-event."
     },
     {
@@ -930,6 +1010,11 @@
       },
       "best": "VERIFY (through your own contact)",
       "bestDecision": "VERIFY",
+      "acceptableDecisions": [
+        "VERIFY",
+        "REPORT",
+        "ESCALATE"
+      ],
       "learn": "‘Officials’ who pressure you for staff data are a classic pretext — verify through a contact you already trust."
     },
     {
@@ -979,6 +1064,11 @@
       },
       "best": "VERIFY (never share a code)",
       "bestDecision": "VERIFY",
+      "acceptableDecisions": [
+        "VERIFY",
+        "REPORT",
+        "ESCALATE"
+      ],
       "learn": "No real bank or service ever asks you to read back a one-time code — that code unlocks your account."
     },
     {
@@ -1028,6 +1118,10 @@
       },
       "best": "TRUST (pay via the normal process)",
       "bestDecision": "TRUST",
+      "acceptableDecisions": [
+        "TRUST",
+        "VERIFY"
+      ],
       "learn": "Not everything is an attack. A known supplier, normal channel, unchanged details and a matching PO are signs it’s genuine — and paying on time matters too."
     },
     {
@@ -1070,6 +1164,10 @@
       },
       "best": "TRUST (no links, no credentials, official channel)",
       "bestDecision": "TRUST",
+      "acceptableDecisions": [
+        "TRUST",
+        "VERIFY"
+      ],
       "learn": "Real IT messages come through official channels and never ask for passwords or urgent clicks. Spotting a genuine notice avoids alarm fatigue."
     },
     {
@@ -1114,6 +1212,10 @@
       },
       "best": "TRUST (in person, official system, no links)",
       "bestDecision": "TRUST",
+      "acceptableDecisions": [
+        "TRUST",
+        "VERIFY"
+      ],
       "learn": "Compare this with the fake ‘confirm your bank details’ email: official system, in person, no links. Context separates real from fake."
     },
     {
@@ -1162,6 +1264,10 @@
       },
       "best": "TRUST (identity verified through the official portal)",
       "bestDecision": "TRUST",
+      "acceptableDecisions": [
+        "TRUST",
+        "VERIFY"
+      ],
       "learn": "Security shouldn’t block legitimate service. Verified identity through an official channel means you can help with confidence."
     },
     {
@@ -1206,6 +1312,10 @@
       },
       "best": "VERIFY it’s approved, then use it",
       "bestDecision": "VERIFY",
+      "acceptableDecisions": [
+        "VERIFY",
+        "TRUST"
+      ],
       "learn": "The rule isn’t ‘never use online tools’ — it’s ‘use approved ones.’ Knowing what’s sanctioned is the skill."
     },
     {
@@ -1253,6 +1363,10 @@
       },
       "best": "TRUST (normal channel, normal request, nothing sensitive)",
       "bestDecision": "TRUST",
+      "acceptableDecisions": [
+        "TRUST",
+        "VERIFY"
+      ],
       "learn": "Constant suspicion of normal requests grinds work to a halt. Save verification for the red flags: urgency, secrecy, sensitive data, or an unusual channel."
     },
     {
@@ -1301,6 +1415,11 @@
       },
       "best": "VERIFY — one quick call resolves the doubt",
       "bestDecision": "VERIFY",
+      "acceptableDecisions": [
+        "VERIFY",
+        "REPORT",
+        "ESCALATE"
+      ],
       "learn": "When something is mostly normal but one detail is off (amount, tone, urgency), a 30-second check beats both blindly paying and crying fraud."
     },
     {
@@ -1344,6 +1463,11 @@
       },
       "best": "VERIFY (check the profile and company first)",
       "bestDecision": "VERIFY",
+      "acceptableDecisions": [
+        "VERIFY",
+        "REPORT",
+        "ESCALATE"
+      ],
       "learn": "Not malicious by default, not safe by default. Verify the source before handing over personal information."
     },
     {
@@ -1391,6 +1515,11 @@
       },
       "best": "VERIFY (sign in through the app yourself, not the popup)",
       "bestDecision": "VERIFY",
+      "acceptableDecisions": [
+        "VERIFY",
+        "REPORT",
+        "ESCALATE"
+      ],
       "learn": "Re-auth prompts are often real — but only ever enter credentials somewhere you navigated to yourself."
     },
     {
@@ -1438,6 +1567,11 @@
       },
       "best": "VERIFY (a quick ‘did you send this?’)",
       "bestDecision": "VERIFY",
+      "acceptableDecisions": [
+        "VERIFY",
+        "REPORT",
+        "ESCALATE"
+      ],
       "learn": "Even real colleagues get hijacked. A two-second check before clicking an unexpected link costs nothing."
     },
     {
@@ -1483,6 +1617,11 @@
       },
       "best": "IGNORE (don’t forward it)",
       "bestDecision": "IGNORE",
+      "acceptableDecisions": [
+        "IGNORE",
+        "VERIFY",
+        "REPORT"
+      ],
       "learn": "Hoaxes survive by being forwarded. Don’t pass them on, don’t panic — just delete."
     },
     {
@@ -1527,6 +1666,10 @@
       },
       "best": "IGNORE (just delete or unsubscribe)",
       "bestDecision": "IGNORE",
+      "acceptableDecisions": [
+        "IGNORE",
+        "TRUST"
+      ],
       "learn": "Not every unwanted email is an attack. Marketing spam gets deleted or unsubscribed — it’s not a security incident."
     },
     {
@@ -1572,6 +1715,10 @@
       },
       "best": "IGNORE (don’t feed the troll)",
       "bestDecision": "IGNORE",
+      "acceptableDecisions": [
+        "IGNORE",
+        "VERIFY"
+      ],
       "learn": "Public trolls want a reaction. Don’t engage — escalate only if it turns into harassment or impersonation."
     },
     {
@@ -1617,6 +1764,10 @@
       },
       "best": "IGNORE (just decline)",
       "bestDecision": "IGNORE",
+      "acceptableDecisions": [
+        "IGNORE",
+        "VERIFY"
+      ],
       "learn": "A stranger’s request isn’t a threat to report — decline or ignore it. Save caution for accounts impersonating real people."
     },
     {
@@ -1662,6 +1813,11 @@
       },
       "best": "IGNORE (just delete it)",
       "bestDecision": "IGNORE",
+      "acceptableDecisions": [
+        "IGNORE",
+        "VERIFY",
+        "REPORT"
+      ],
       "learn": "Obvious junk that’s already in spam doesn’t need a ticket — delete it. Reserve reporting for messages that look targeted or convincing."
     },
     {
@@ -1710,6 +1866,11 @@
       },
       "best": "ESCALATE (to management / comms)",
       "bestDecision": "ESCALATE",
+      "acceptableDecisions": [
+        "ESCALATE",
+        "VERIFY",
+        "REPORT"
+      ],
       "learn": "Press, legal and regulator questions go straight to management — never improvise on the company’s behalf, and never just sit on them."
     },
     {
@@ -1759,6 +1920,11 @@
       },
       "best": "ESCALATE (for the right sign-off)",
       "bestDecision": "ESCALATE",
+      "acceptableDecisions": [
+        "ESCALATE",
+        "VERIFY",
+        "REPORT"
+      ],
       "learn": "Even a legitimate request for sensitive data needs proper authorisation. Confirm it’s real, then escalate — don’t release data solo."
     },
     {
@@ -1806,6 +1972,11 @@
       },
       "best": "ESCALATE (raise it through the right channel)",
       "bestDecision": "ESCALATE",
+      "acceptableDecisions": [
+        "ESCALATE",
+        "VERIFY",
+        "REPORT"
+      ],
       "learn": "Insider mistakes are a people problem, not a phishing report. Raise them through your manager or security so they’re handled constructively."
     },
     {
@@ -1854,6 +2025,11 @@
       },
       "best": "ESCALATE (for least-privilege approval)",
       "bestDecision": "ESCALATE",
+      "acceptableDecisions": [
+        "ESCALATE",
+        "VERIFY",
+        "REPORT"
+      ],
       "learn": "Genuine-looking, high-impact requests still need the right approval. Escalate big access grants for review rather than granting — or blocking — them yourself."
     },
     {
@@ -1902,6 +2078,11 @@
       },
       "best": "ESCALATE (to leadership / incident response)",
       "bestDecision": "ESCALATE",
+      "acceptableDecisions": [
+        "ESCALATE",
+        "REPORT",
+        "VERIFY"
+      ],
       "learn": "A credible threat against the company goes to leadership and incident response fast — don’t pay, don’t negotiate, and don’t sit on it alone."
     }
   ],

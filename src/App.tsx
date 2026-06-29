@@ -26,6 +26,7 @@ interface OutcomeData {
   deltas: Record<string, number>
   best: string
   learn: string
+  verdict: 'best' | 'ok' | 'wrong'
   aggravated: boolean
 }
 
@@ -54,8 +55,18 @@ export default function App() {
       const outcome = scenario.outcomes[decisionName]
       const decision = data.decisions.find((d) => d.name === decisionName)
 
+      // A scenario can have several correct answers; only the truly wrong ones
+      // get penalised. bestDecision is always acceptable even if not listed.
+      const acceptable = scenario.acceptableDecisions ?? [scenario.bestDecision]
+      const verdict: 'best' | 'ok' | 'wrong' =
+        decisionName === scenario.bestDecision
+          ? 'best'
+          : acceptable.includes(decisionName)
+            ? 'ok'
+            : 'wrong'
+
       // Wrong call? Amplify the harmful side of the outcome so mistakes bite harder.
-      const aggravated = decisionName !== scenario.bestDecision
+      const aggravated = verdict === 'wrong'
       const effectiveDeltas = aggravated
         ? amplifyHarm(outcome.deltas ?? {}, data.meters, data.meta.wrongAnswerPenalty)
         : (outcome.deltas ?? {})
@@ -70,6 +81,7 @@ export default function App() {
         deltas: effectiveDeltas,
         best: scenario.best,
         learn: scenario.learn,
+        verdict,
         aggravated,
       })
       setScreen('outcome')
@@ -200,7 +212,7 @@ export default function App() {
               meterConfigs={data.meters}
               best={outcomeData.best}
               learn={outcomeData.learn}
-              aggravated={outcomeData.aggravated}
+              verdict={outcomeData.verdict}
               isLast={gameState.incident >= data.meta.incidentsPerGame}
               onNext={handleNext}
             />

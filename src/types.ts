@@ -36,6 +36,8 @@ export interface Scenario {
   text: string
   legitimacy: 'malicious' | 'legitimate' | 'ambiguous'
   bestDecision: string
+  /** Every decision that counts as a correct (non-penalised) answer, best first. */
+  acceptableDecisions?: string[]
   outcomes: Record<string, Outcome>
   best: string
   learn: string

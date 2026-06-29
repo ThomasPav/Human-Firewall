@@ -436,6 +436,8 @@ button { font-family: inherit; color: inherit; cursor: pointer; border: none; }
 .note.learn b { color: #e6c265; }
 .note.penalty { background: #36161a; border: 1px solid #6a2730; margin-bottom: 10px; }
 .note.penalty b { color: var(--bad); }
+.note.correct { background: #10301f; border: 1px solid #1d5234; margin-bottom: 10px; }
+.note.correct b { color: #67d49a; }
 
 /* ── Actions ─────────────────────────────── */
 .actions {

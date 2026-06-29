@@ -8,7 +8,7 @@ interface Props {
   meterConfigs: Record<string, MeterConfig>
   best: string
   learn: string
-  aggravated: boolean
+  verdict: 'best' | 'ok' | 'wrong'
   isLast: boolean
   onNext: () => void
 }
@@ -64,7 +64,7 @@ export function OutcomeScreen({
   meterConfigs,
   best,
   learn,
-  aggravated,
+  verdict,
   isLast,
   onNext,
 }: Props) {
@@ -76,9 +76,19 @@ export function OutcomeScreen({
       </p>
       <p className="outcome-text">{outcomeText}</p>
 
-      {aggravated && (
+      {verdict === 'wrong' && (
         <div className="note penalty" role="alert">
           <b>⚠ Wrong call.</b> The fallout hits harder than usual.
+        </div>
+      )}
+      {verdict === 'best' && (
+        <div className="note correct">
+          <b>✓ Best move.</b> The strongest response to this one.
+        </div>
+      )}
+      {verdict === 'ok' && (
+        <div className="note correct">
+          <b>✓ Good call.</b> A safe, correct choice — see the best move below.
         </div>
       )}
 
