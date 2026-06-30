@@ -18,10 +18,20 @@ import { PlayerSetupScreen } from './components/screens/PlayerSetupScreen'
 import { ScenarioScreen } from './components/screens/ScenarioScreen'
 import { OutcomeScreen } from './components/screens/OutcomeScreen'
 import { EndScreen } from './components/screens/EndScreen'
+import { LiveHost } from './components/screens/live/LiveHost'
+import { LivePlayer } from './components/screens/live/LivePlayer'
+import { isLiveConfigured } from './live/supabaseClient'
 
 const data = rawData as unknown as GameData
 
-type Screen = 'start' | 'setup' | 'scenario' | 'outcome' | 'end'
+type Screen = 'start' | 'setup' | 'scenario' | 'outcome' | 'end' | 'live' | 'live-setup'
+
+// A /join or /join/<code> URL drops straight into the Live Compete player flow.
+// Returns the (possibly empty) code, or null when the path isn't a join link.
+function parseJoin(path: string): string | null {
+  const m = path.match(/^\/join\/?([A-Za-z0-9]*)$/)
+  return m ? m[1] || '' : null
+}
 
 export interface OutcomeNote {
   kind: 'amp' | 'reward'
@@ -49,11 +59,24 @@ export default function App() {
   const [gameState, setGameState] = useState<GameState | null>(null)
   const [outcomeData, setOutcomeData] = useState<OutcomeData | null>(null)
   const [endData, setEndData] = useState<EndData | null>(null)
+  const [joinCode, setJoinCode] = useState<string | null>(() => parseJoin(window.location.pathname))
 
-  // Multiplayer first collects a roster; the other modes start straight away.
+  // Keep the join route in sync with back/forward navigation.
+  useEffect(() => {
+    const onPop = () => setJoinCode(parseJoin(window.location.pathname))
+    window.addEventListener('popstate', onPop)
+    return () => window.removeEventListener('popstate', onPop)
+  }, [])
+
+  // Multiplayer first collects a roster; Live Compete needs a backend; the rest
+  // start straight away.
   function selectMode(mode: GameMode) {
     if (mode === 'multiplayer') {
       setScreen('setup')
+      return
+    }
+    if (mode === 'live') {
+      setScreen(isLiveConfigured ? 'live' : 'live-setup')
       return
     }
     startGame(mode, [])
@@ -242,6 +265,22 @@ export default function App() {
         ? 'TEAM'
         : 'SOLO'
 
+  const goHome = () => {
+    if (window.location.pathname !== '/') window.history.pushState({}, '', '/')
+    setJoinCode(null)
+  }
+
+  // A /join URL is the phone player flow — it bypasses the normal app shell.
+  if (joinCode !== null) {
+    return (
+      <div className="wrap">
+        <main className="stage">
+          <LivePlayer initialCode={joinCode} onExit={goHome} />
+        </main>
+      </div>
+    )
+  }
+
   return (
     <div className={isFacilitator ? 'facilitator' : ''}>
       <div className="wrap">
@@ -276,13 +315,41 @@ export default function App() {
         )}
 
         <main className="stage">
-          {screen === 'start' && <StartScreen data={data} onSelectMode={selectMode} />}
+          {screen === 'start' && (
+            <StartScreen
+              data={data}
+              onSelectMode={selectMode}
+              onJoin={() => {
+                window.history.pushState({}, '', '/join')
+                setJoinCode('')
+              }}
+            />
+          )}
 
           {screen === 'setup' && (
             <PlayerSetupScreen
               onStart={(names) => startGame('multiplayer', names)}
               onBack={() => setScreen('start')}
             />
+          )}
+
+          {screen === 'live' && <LiveHost onExit={() => setScreen('start')} />}
+
+          {screen === 'live-setup' && (
+            <div className="card live-msg">
+              <div className="eyebrow">Live Compete · setup needed</div>
+              <h2>Connect a backend first</h2>
+              <p className="reason">
+                Live Compete syncs phones through Supabase. Add your project keys to a
+                <code> .env.local</code> file (<code>VITE_SUPABASE_URL</code>,{' '}
+                <code>VITE_SUPABASE_ANON_KEY</code>), run the SQL migration in{' '}
+                <code>supabase/migrations/</code>, then restart the dev server. See the
+                README “Live Compete setup” section.
+              </p>
+              <div className="actions">
+                <button className="btn primary" onClick={() => setScreen('start')}>Back</button>
+              </div>
+            </div>
           )}
 
           {screen === 'scenario' && gameState && (

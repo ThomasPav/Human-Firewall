@@ -73,48 +73,61 @@ Use it as the spec-in-code, then extend or rebuild as below.
 ## Required modes
 
 - **Solo** — self-paced; one player; score and rating at the end.
+- **Team (pass-and-play)** — 2–6 players share one device and the four meters,
+  taking turns deciding; an anonymous per-player scoreboard at the end.
 - **Facilitator** — a single-screen presenter view for a room: larger type,
   “the team decides” framing, and a button to draw Event cards.
-- **Live multiplayer (Menti-style)** — many players join from their phones with a
-  code or QR and answer each incident in real time. **This needs a backend** (see
+- **Live Compete (Menti-style)** — many players join from their phones with a code
+  or QR and answer each incident in real time, **anonymously**; after each card the
+  host shows the percentage who picked each choice. **This needs a backend** (see
   below); the single-file `humanfirewall.html` cannot do cross-device sync on its
-  own.
+  own — Live Compete lives in the React app only.
 
-## Live multiplayer spec (the Menti-style mode)
+## Live Compete (the Menti-style mode) — as built
 
-Goal: a host opens a session on a shared screen; players scan a QR or enter a short
-code on their phones; each incident, everyone picks a decision; the host screen
-shows a live tally, then reveals the outcome and updates the shared meters.
+A host opens a session on a shared/projector screen; players scan a QR or enter a
+short code on their phones and play **anonymously**. Each incident everyone picks a
+decision; the host shows a live "X of Y answered" count, then on **Reveal** a
+horizontal **bar chart of the percentage who chose each decision**, highlights the
+correct one (`bestDecision`), and shows the outcome + `learn`. Players compete on
+**individual points** (correct pick vs `bestDecision`, plus a speed bonus), shown on
+a live anonymous leaderboard. The four meters are intentionally **not** used here —
+the competition is individual, not the shared-meter game.
 
-**Recommended stack (easiest for this):** Supabase (Postgres + Realtime) — no
-server to run; the React app subscribes to row changes. Alternatives: Firebase
-Realtime DB, PartyKit or Ably (WebSocket rooms), or a tiny Node + `ws` server.
-Generate the QR client-side with the `qrcode` npm package; the QR encodes the join
-URL `https://yourapp/join/<code>`.
+**Anonymity:** we store only an opaque player id + a random alias (e.g. "Teal
+Otter") + score. No names, emails, or PII are ever collected or shown. The id lives
+in the phone's `localStorage`, so a refresh/reconnect keeps the same score.
 
-**Data model (Supabase tables):**
-- `sessions` (id, code, host_id, status[`lobby|playing|revealed|ended`],
-  current_incident, deck[jsonb of 20 scenario ids], meters[jsonb], active_event[jsonb]).
-- `players` (id, session_id, name, joined_at, score).
-- `votes` (id, session_id, incident, player_id, decision) — one row per player per
-  incident.
+**Stack:** Supabase (Postgres + Realtime); the React app subscribes to row changes.
+QR is generated client-side with the `qrcode` package; it encodes `<app-url>/join/<code>`.
 
-**Screens to build:**
-- **Host / present:** create session → show code + QR → lobby with joined players
-  → per incident: show scenario big, a live count of votes per decision, a
-  “Reveal” button → on reveal, resolve using the **majority** (or host-picked)
-  decision, apply `deltas` to shared meters, show outcome + learn → Next.
-- **Player (phone):** join by code/QR → enter name → each incident shows the four
-  decision buttons → tap to vote → “locked in” until reveal → see the outcome and
-  their running personal score (award points for matching the `bestDecision`).
-- Reuse all existing rules, scoring, the balanced 20-card `buildDeck`, and the
-  event modifiers — the only new parts are session/realtime sync and the
-  vote-aggregation step.
+**Data model (`supabase/migrations/0001_live_compete.sql`):**
+- `sessions` (id, code, status[`lobby|playing|revealed|ended`], current_incident,
+  deck[jsonb of 20 scenario ids], created_at).
+- `players` (id, session_id, alias, score, total_ms[tie-break], joined_at).
+- `votes` (id, session_id, incident, player_id, decision, answered_at) — unique on
+  (session_id, incident, player_id).
 
-**Flow:** host create → players join (Realtime presence) → host starts → for each
-of 20 incidents: players vote (Realtime inserts) → host reveals (majority resolves,
-meters update, broadcast) → repeat → end screen with team result + a per-player
-leaderboard.
+**Code map:** logic in `src/live/` (`supabaseClient`, `api`, `scoring`, `alias`,
+`types`); screens in `src/components/screens/live/` (`LiveHost`, `LivePlayer`,
+`BarChart`, `LiveLeaderboard`). The deck reuses `buildDeck` via `buildDeckIds`.
+
+### Live Compete setup
+
+1. Create a free project at [supabase.com](https://supabase.com).
+2. In the project's **SQL Editor**, paste and run
+   `supabase/migrations/0001_live_compete.sql` (creates the tables, RLS policies,
+   and adds them to the realtime publication).
+3. Copy `.env.example` to `.env.local` and fill in `VITE_SUPABASE_URL` and
+   `VITE_SUPABASE_ANON_KEY` from **Project Settings → API**. Optionally set
+   `VITE_APP_URL` to your deployed origin so phones scan a reachable QR.
+4. `npm run dev` (restart if it was already running). The start screen's **Live
+   Compete** button opens the host; phones join at `<app-url>/join/<code>`.
+5. Deploying to a static host? `public/_redirects` handles SPA deep links on
+   Netlify; on Vercel add an equivalent rewrite (see the file's comment).
+
+Without those env vars the Live Compete button shows a "setup needed" notice;
+Solo, Team, and Facilitator work with no backend.
 
 ## Other build options
 

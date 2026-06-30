@@ -4,7 +4,7 @@ export const METER_KEYS = ['R', 'M', 'S', 'X'] as const
 export type MeterKey = (typeof METER_KEYS)[number]
 export type MeterValues = Record<MeterKey, number>
 
-export type GameMode = 'solo' | 'facilitator' | 'multiplayer'
+export type GameMode = 'solo' | 'facilitator' | 'multiplayer' | 'live'
 
 /** A pass-and-play participant (multiplayer mode). */
 export interface Player {
@@ -196,6 +196,12 @@ export function buildDeck(scenarios: Scenario[], roundSize: number): Scenario[] 
     used.add(s.id)
   }
   return shuffle(pick)
+}
+
+// The same balanced round as buildDeck, but as scenario ids — used by Live Compete
+// to store the deck in the session row so host and players resolve cards identically.
+export function buildDeckIds(scenarios: Scenario[], roundSize: number): number[] {
+  return buildDeck(scenarios, roundSize).map((s) => s.id)
 }
 
 export function initState(

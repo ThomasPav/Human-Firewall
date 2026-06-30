@@ -4,9 +4,10 @@ import { METER_KEYS, type GameMode } from '../../gameLogic'
 interface Props {
   data: GameData
   onSelectMode: (mode: GameMode) => void
+  onJoin: () => void
 }
 
-export function StartScreen({ data, onSelectMode }: Props) {
+export function StartScreen({ data, onSelectMode, onJoin }: Props) {
   return (
     <div className="hero">
       <div className="eyebrow">Cyber-awareness · card game</div>
@@ -37,6 +38,15 @@ export function StartScreen({ data, onSelectMode }: Props) {
           </span>
         </button>
 
+        <button className="modebtn" onClick={() => onSelectMode('live')}>
+          <span className="ic" aria-hidden="true">⚡</span>
+          <span>
+            <span className="t">Live Compete</span>
+            <br />
+            <span className="d">Host a live game — players join by QR on their phones.</span>
+          </span>
+        </button>
+
         <button className="modebtn" onClick={() => onSelectMode('facilitator')}>
           <span className="ic" aria-hidden="true">⌘</span>
           <span>
@@ -46,6 +56,10 @@ export function StartScreen({ data, onSelectMode }: Props) {
           </span>
         </button>
       </div>
+
+      <button type="button" className="joinlink" onClick={onJoin}>
+        Joining a live game? Enter a code →
+      </button>
 
       <div className="legend" aria-label="Meter descriptions">
         {METER_KEYS.map((k) => {

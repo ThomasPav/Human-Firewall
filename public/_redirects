@@ -1,0 +1,4 @@
+# SPA fallback so deep links like /join/<code> resolve to the app (Netlify-style).
+# Vite dev already serves index.html for unknown routes; on Vercel use a rewrite in
+# vercel.json instead: { "rewrites": [{ "source": "/(.*)", "destination": "/" }] }.
+/*  /index.html  200
