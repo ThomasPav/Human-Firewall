@@ -139,7 +139,15 @@ export async function fetchAllVotes(sessionId: string): Promise<Vote[]> {
   return (data ?? []) as Vote[]
 }
 
+export async function fetchSession(sessionId: string): Promise<Session | null> {
+  const { data, error } = await db().from('sessions').select().eq('id', sessionId).maybeSingle()
+  if (error) throw error
+  return (data as Session) ?? null
+}
+
 // ── Realtime subscriptions (caller removes the channel on cleanup) ──────────────
+// Each also reconciles on SUBSCRIBED: any rows written during the websocket
+// handshake would otherwise be missed, so we re-fetch once the channel is ready.
 
 export function subscribeSession(sessionId: string, onChange: (s: Session) => void): RealtimeChannel {
   return db()
@@ -149,7 +157,9 @@ export function subscribeSession(sessionId: string, onChange: (s: Session) => vo
       { event: 'UPDATE', schema: 'public', table: 'sessions', filter: `id=eq.${sessionId}` },
       (payload) => onChange(payload.new as Session),
     )
-    .subscribe()
+    .subscribe((status) => {
+      if (status === 'SUBSCRIBED') fetchSession(sessionId).then((s) => s && onChange(s)).catch(() => {})
+    })
 }
 
 export function subscribePlayers(sessionId: string, onChange: () => void): RealtimeChannel {
@@ -160,7 +170,9 @@ export function subscribePlayers(sessionId: string, onChange: () => void): Realt
       { event: '*', schema: 'public', table: 'players', filter: `session_id=eq.${sessionId}` },
       () => onChange(),
     )
-    .subscribe()
+    .subscribe((status) => {
+      if (status === 'SUBSCRIBED') onChange()
+    })
 }
 
 export function subscribeVotes(sessionId: string, onChange: () => void): RealtimeChannel {
@@ -171,7 +183,9 @@ export function subscribeVotes(sessionId: string, onChange: () => void): Realtim
       { event: '*', schema: 'public', table: 'votes', filter: `session_id=eq.${sessionId}` },
       () => onChange(),
     )
-    .subscribe()
+    .subscribe((status) => {
+      if (status === 'SUBSCRIBED') onChange()
+    })
 }
 
 export function removeChannel(ch: RealtimeChannel | null): void {

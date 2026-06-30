@@ -44,38 +44,41 @@ export function LiveHost({ onExit }: Props) {
   // Mirror live values so realtime callbacks read fresh data without re-subscribing.
   const sessionRef = useRef<Session | null>(null)
   sessionRef.current = session
+  const createdRef = useRef(false)
 
-  // Create the session once and wire up realtime subscriptions.
+  // Create the session exactly once (the ref guards StrictMode's double-invoke,
+  // so dev mode doesn't spawn a duplicate session row).
   useEffect(() => {
-    let channels: ReturnType<typeof subscribeSession>[] = []
-    let cancelled = false
+    if (createdRef.current) return
+    createdRef.current = true
     ;(async () => {
       try {
         const deck = buildDeckIds(data.scenarios, data.meta.incidentsPerGame)
         const s = await createSession(deck)
-        if (cancelled) return
         setSession(s)
         setQr(await QRCode.toDataURL(`${appUrl()}/join/${s.code}`, { margin: 1, width: 320 }))
         setPlayers(await fetchPlayers(s.id))
-
-        const refreshVotes = async () => {
-          const cur = sessionRef.current
-          if (cur) setVotes(await fetchVotes(cur.id, cur.current_incident))
-        }
-        channels = [
-          subscribeSession(s.id, (next) => setSession(next)),
-          subscribePlayers(s.id, async () => setPlayers(await fetchPlayers(s.id))),
-          subscribeVotes(s.id, refreshVotes),
-        ]
       } catch (e) {
-        if (!cancelled) setError((e as Error).message)
+        setError((e as Error).message)
       }
     })()
-    return () => {
-      cancelled = true
-      channels.forEach(removeChannel)
-    }
   }, [])
+
+  // Subscribe to realtime once a session exists; re-bind only if its id changes.
+  useEffect(() => {
+    if (!session) return
+    const sid = session.id
+    const refreshVotes = async () => {
+      const cur = sessionRef.current
+      if (cur) setVotes(await fetchVotes(cur.id, cur.current_incident))
+    }
+    const channels = [
+      subscribeSession(sid, (next) => setSession(next)),
+      subscribePlayers(sid, async () => setPlayers(await fetchPlayers(sid))),
+      subscribeVotes(sid, refreshVotes),
+    ]
+    return () => channels.forEach(removeChannel)
+  }, [session?.id]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // On each new incident, reset the tally and pull any votes already in.
   useEffect(() => {
