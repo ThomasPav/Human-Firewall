@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import type { Decision, EventEffect, GameEvent, Scenario } from '../../types'
-import type { ActiveMod, ActiveReward } from '../../gameLogic'
+import type { ActiveMod, ActiveReward, GameMode } from '../../gameLogic'
 
 interface Props {
   scenario: Scenario
   decisions: Decision[]
-  mode: 'solo' | 'facilitator'
+  mode: GameMode
+  /** Name of the player whose turn it is (multiplayer only). */
+  currentPlayer: string | null
   eventUsed: boolean
   events: GameEvent[]
   incident: number
@@ -37,6 +39,7 @@ export function ScenarioScreen({
   scenario,
   decisions,
   mode,
+  currentPlayer,
   eventUsed,
   events,
   activeMod,
@@ -62,10 +65,22 @@ export function ScenarioScreen({
     setDrawn({ ...drawn, applied: true })
   }
 
-  const prompt = mode === 'facilitator' ? 'The team decides — play one card.' : 'What do you do?'
+  const prompt =
+    mode === 'facilitator'
+      ? 'The team decides — play one card.'
+      : mode === 'multiplayer' && currentPlayer
+        ? `${currentPlayer}, what do you do?`
+        : 'What do you do?'
 
   return (
     <>
+      {mode === 'multiplayer' && currentPlayer && (
+        <div className="turnbanner" role="status" aria-live="polite">
+          <span className="who">{currentPlayer}</span>
+          <span className="up">it&rsquo;s your call</span>
+        </div>
+      )}
+
       {activeMod && (
         <div className="evbanner" style={{ borderColor: activeMod.color }} role="status">
           <b>{activeMod.label}</b> — wrong answers on {activeMod.channelLabel} cost ×

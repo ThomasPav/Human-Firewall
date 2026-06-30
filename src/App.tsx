@@ -2,23 +2,26 @@ import { useCallback, useEffect, useState } from 'react'
 import rawData from '../game-data.json'
 import type { EventEffect, GameData } from './types'
 import {
+  type GameMode,
   type GameState,
   amplify,
   applyDeltas,
   checkWin,
   crashedMeter,
+  currentPlayerIndex,
   initState,
   modActive,
 } from './gameLogic'
 import { MeterHUD } from './components/MeterHUD'
 import { StartScreen } from './components/screens/StartScreen'
+import { PlayerSetupScreen } from './components/screens/PlayerSetupScreen'
 import { ScenarioScreen } from './components/screens/ScenarioScreen'
 import { OutcomeScreen } from './components/screens/OutcomeScreen'
 import { EndScreen } from './components/screens/EndScreen'
 
 const data = rawData as unknown as GameData
 
-type Screen = 'start' | 'scenario' | 'outcome' | 'end'
+type Screen = 'start' | 'setup' | 'scenario' | 'outcome' | 'end'
 
 export interface OutcomeNote {
   kind: 'amp' | 'reward'
@@ -47,8 +50,17 @@ export default function App() {
   const [outcomeData, setOutcomeData] = useState<OutcomeData | null>(null)
   const [endData, setEndData] = useState<EndData | null>(null)
 
-  function startGame(mode: 'solo' | 'facilitator') {
-    setGameState(initState(mode, data))
+  // Multiplayer first collects a roster; the other modes start straight away.
+  function selectMode(mode: GameMode) {
+    if (mode === 'multiplayer') {
+      setScreen('setup')
+      return
+    }
+    startGame(mode, [])
+  }
+
+  function startGame(mode: GameMode, names: string[]) {
+    setGameState(initState(mode, data, names))
     setOutcomeData(null)
     setEndData(null)
     setScreen('scenario')
@@ -95,7 +107,24 @@ export default function App() {
 
       const newMeters = applyDeltas(gameState.meters, deltas, data.meters)
 
-      setGameState((prev) => (prev ? { ...prev, meters: newMeters } : prev))
+      setGameState((prev) => {
+        if (!prev) return prev
+        let players = prev.players
+        // In multiplayer, tally this incident against whoever's turn it is.
+        if (prev.mode === 'multiplayer' && players.length) {
+          const idx = currentPlayerIndex(players, prev.incident)
+          players = players.map((p, i) =>
+            i === idx
+              ? {
+                  ...p,
+                  correct: p.correct + (wrong ? 0 : 1),
+                  wrong: p.wrong + (wrong ? 1 : 0),
+                }
+              : p,
+          )
+        }
+        return { ...prev, meters: newMeters, players }
+      })
       setOutcomeData({
         decisionName,
         decisionColor: decision?.color ?? '#fff',
@@ -206,16 +235,22 @@ export default function App() {
   }, [screen, gameState, handleDecision])
 
   const isFacilitator = gameState?.mode === 'facilitator'
+  const modeLabel =
+    gameState?.mode === 'facilitator'
+      ? 'FACILITATOR'
+      : gameState?.mode === 'multiplayer'
+        ? 'TEAM'
+        : 'SOLO'
 
   return (
     <div className={isFacilitator ? 'facilitator' : ''}>
       <div className="wrap">
-        {screen !== 'start' && gameState && (
+        {screen !== 'start' && screen !== 'setup' && gameState && (
           <header className="topbar">
             <div className="brand">
               HUMAN <span className="fw">FIREWALL</span>
             </div>
-            <div className="pill mono">{isFacilitator ? 'FACILITATOR' : 'SOLO'}</div>
+            <div className="pill mono">{modeLabel}</div>
             {screen !== 'end' && (
               <>
                 <div className="counter mono" aria-live="polite" aria-atomic="true">
@@ -241,7 +276,14 @@ export default function App() {
         )}
 
         <main className="stage">
-          {screen === 'start' && <StartScreen data={data} onSelectMode={startGame} />}
+          {screen === 'start' && <StartScreen data={data} onSelectMode={selectMode} />}
+
+          {screen === 'setup' && (
+            <PlayerSetupScreen
+              onStart={(names) => startGame('multiplayer', names)}
+              onBack={() => setScreen('start')}
+            />
+          )}
 
           {screen === 'scenario' && gameState && (
             <ScenarioScreen
@@ -249,6 +291,11 @@ export default function App() {
               scenario={gameState.deck[gameState.incident - 1]}
               decisions={data.decisions}
               mode={gameState.mode}
+              currentPlayer={
+                gameState.mode === 'multiplayer' && gameState.players.length
+                  ? gameState.players[currentPlayerIndex(gameState.players, gameState.incident)].name
+                  : null
+              }
               eventUsed={gameState.eventUsed}
               events={data.events}
               incident={gameState.incident}
@@ -286,7 +333,8 @@ export default function App() {
               meterConfigs={data.meters}
               ratings={data.ratings}
               totalIncidents={data.meta.incidentsPerGame}
-              onAgain={() => startGame(gameState.mode)}
+              players={gameState.players}
+              onAgain={() => startGame(gameState.mode, gameState.players.map((p) => p.name))}
               onHome={() => setScreen('start')}
             />
           )}

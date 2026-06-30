@@ -4,6 +4,15 @@ export const METER_KEYS = ['R', 'M', 'S', 'X'] as const
 export type MeterKey = (typeof METER_KEYS)[number]
 export type MeterValues = Record<MeterKey, number>
 
+export type GameMode = 'solo' | 'facilitator' | 'multiplayer'
+
+/** A pass-and-play participant (multiplayer mode). */
+export interface Player {
+  name: string
+  correct: number
+  wrong: number
+}
+
 /** Active "amplify" event modifier: ×mult on wrong answers of a channel. */
 export interface ActiveMod {
   channel: string | null
@@ -22,7 +31,7 @@ export interface ActiveReward {
 }
 
 export interface GameState {
-  mode: 'solo' | 'facilitator'
+  mode: GameMode
   phase: 'scenario' | 'outcome' | 'end'
   incident: number
   meters: MeterValues
@@ -30,6 +39,13 @@ export interface GameState {
   eventUsed: boolean
   activeMod: ActiveMod | null
   activeReward: ActiveReward | null
+  /** Roster for multiplayer; empty in solo/facilitator. */
+  players: Player[]
+}
+
+/** Round-robin: index of the player who decides incident `n` (1-based). */
+export function currentPlayerIndex(players: Player[], incident: number): number {
+  return players.length ? (incident - 1) % players.length : -1
 }
 
 export function shuffle<T>(arr: T[]): T[] {
@@ -182,7 +198,11 @@ export function buildDeck(scenarios: Scenario[], roundSize: number): Scenario[] 
   return shuffle(pick)
 }
 
-export function initState(mode: 'solo' | 'facilitator', data: GameData): GameState {
+export function initState(
+  mode: GameMode,
+  data: GameData,
+  names: string[] = [],
+): GameState {
   const meters = {} as MeterValues
   for (const k of METER_KEYS) {
     meters[k] = data.meters[k].start
@@ -196,5 +216,6 @@ export function initState(mode: 'solo' | 'facilitator', data: GameData): GameSta
     eventUsed: false,
     activeMod: null,
     activeReward: null,
+    players: names.map((name) => ({ name, correct: 0, wrong: 0 })),
   }
 }

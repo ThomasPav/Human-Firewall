@@ -1,5 +1,5 @@
 import type { MeterConfig, Rating } from '../../types'
-import { METER_KEYS, type MeterValues, fmtMeter, meterColorClass, getRating, dangerZoneMeters } from '../../gameLogic'
+import { METER_KEYS, type MeterValues, type Player, fmtMeter, meterColorClass, getRating, dangerZoneMeters } from '../../gameLogic'
 
 interface Props {
   survived: boolean
@@ -8,6 +8,8 @@ interface Props {
   meterConfigs: Record<string, MeterConfig>
   ratings: Rating[]
   totalIncidents: number
+  /** Roster with per-player tallies (multiplayer only). */
+  players: Player[]
   onAgain: () => void
   onHome: () => void
 }
@@ -26,11 +28,16 @@ export function EndScreen({
   meterConfigs,
   ratings,
   totalIncidents,
+  players,
   onAgain,
   onHome,
 }: Props) {
   const rating = getRating(meters.S, ratings)
   const won = survived
+
+  // Crown the player with the most correct calls (only if anyone scored).
+  const ranked = [...players].sort((a, b) => b.correct - a.correct)
+  const topCorrect = ranked.length ? ranked[0].correct : 0
 
   let reason: string
   if (crashedKey) {
@@ -79,6 +86,27 @@ export function EndScreen({
           )
         })}
       </div>
+
+      {ranked.length > 0 && (
+        <div className="scoreboard" aria-label="Team scoreboard">
+          <h3>Team scoreboard</h3>
+          {ranked.map((p) => {
+            const calls = p.correct + p.wrong
+            const isMvp = topCorrect > 0 && p.correct === topCorrect
+            return (
+              <div className="sb-row" key={p.name}>
+                <span className="sb-name">
+                  {isMvp && <span aria-label="Most valuable player">👑 </span>}
+                  {p.name}
+                </span>
+                <span className="sb-score mono">
+                  {p.correct}/{calls} correct
+                </span>
+              </div>
+            )
+          })}
+        </div>
+      )}
 
       <div className="actions">
         <button className="btn primary" onClick={onAgain} autoFocus>

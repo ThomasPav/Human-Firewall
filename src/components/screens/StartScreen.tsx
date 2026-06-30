@@ -1,9 +1,9 @@
 import type { GameData } from '../../types'
-import { METER_KEYS } from '../../gameLogic'
+import { METER_KEYS, type GameMode } from '../../gameLogic'
 
 interface Props {
   data: GameData
-  onSelectMode: (mode: 'solo' | 'facilitator') => void
+  onSelectMode: (mode: GameMode) => void
 }
 
 export function StartScreen({ data, onSelectMode }: Props) {
@@ -13,7 +13,10 @@ export function StartScreen({ data, onSelectMode }: Props) {
       <h1>
         HUMAN <span className="fw">FIREWALL</span>
       </h1>
-      <p className="sub">Ten everyday incidents. Five ways to react. Keep the company standing.</p>
+      <p className="sub">
+        {data.meta.incidentsPerGame} everyday incidents. {data.decisions.length} ways to
+        react. Keep the company standing.
+      </p>
 
       <div className="modes">
         <button className="modebtn" onClick={() => onSelectMode('solo')}>
@@ -22,6 +25,15 @@ export function StartScreen({ data, onSelectMode }: Props) {
             <span className="t">Play solo</span>
             <br />
             <span className="d">Train at your own pace and get a score.</span>
+          </span>
+        </button>
+
+        <button className="modebtn" onClick={() => onSelectMode('multiplayer')}>
+          <span className="ic" aria-hidden="true">⚇</span>
+          <span>
+            <span className="t">Play as a team</span>
+            <br />
+            <span className="d">Pass &amp; play — take turns, share the meters.</span>
           </span>
         </button>
 
