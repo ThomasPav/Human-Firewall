@@ -152,6 +152,30 @@ body.facilitator .scenario-title{font-size:clamp(26px,5vw,38px)}
 body.facilitator .dec .nm{font-size:17px}
 body.facilitator .outcome-text{font-size:22px}
 
+/* team mode: turn banner */
+.turnbanner{display:flex;align-items:baseline;gap:10px;background:linear-gradient(90deg,#16294a,var(--panel2));
+  border:1px solid var(--accent);border-radius:12px;padding:10px 16px;margin-bottom:12px}
+.turnbanner .who{font-weight:800;font-size:18px;letter-spacing:-0.01em}
+.turnbanner .up{font-family:var(--mono);font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+/* team mode: player setup */
+.setup .roster{display:grid;gap:10px;max-width:430px;margin:0 auto 14px}
+.roster-row{display:flex;align-items:center;gap:10px}
+.roster-row .rn{flex:0 0 26px;text-align:center;color:var(--muted);font-size:13px}
+.pinput{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:11px 13px;color:var(--text);font-size:15px}
+.pinput::placeholder{color:var(--muted);opacity:.7}
+.pinput:focus-visible{border-color:var(--accent)}
+.roster-row .rrm{flex:0 0 36px;height:36px;background:var(--panel);border:1px solid var(--line);border-radius:10px;color:var(--muted);font-size:18px;line-height:1}
+.roster-row .rrm:hover:not(:disabled){border-color:var(--bad);color:var(--bad)}
+.roster-row .rrm:disabled{opacity:.4;cursor:not-allowed}
+.setup .addp{margin:0 auto 8px;display:block}
+.setup .actions{margin-top:16px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+/* team mode: end scoreboard */
+.scoreboard{max-width:430px;margin:22px auto 4px;text-align:left}
+.scoreboard h3{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+.sb-row{display:flex;justify-content:space-between;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:9px 13px;margin-bottom:6px}
+.sb-name{font-weight:600}
+.sb-score{font-size:13px;color:var(--muted)}
 @media (max-width:560px){
   .hud{grid-template-columns:repeat(2,1fr)}
   .final{grid-template-columns:repeat(2,1fr)}
@@ -200,7 +224,7 @@ body.facilitator .outcome-text{font-size:22px}
     const byBest = {};
     all.forEach(s => { (byBest[s.bestDecision] = byBest[s.bestDecision] || []).push(s); });
     const pick = [], used = new Set(), count = {};
-    // one of each best-decision first (guarantees all five get used)
+    // one of each best-decision first (guarantees all four get used)
     shuffle(Object.keys(byBest)).forEach(b => {
       if (pick.length >= SIZE) return;
       const s = shuffle(byBest[b]).find(x => !used.has(x.id));
@@ -285,11 +309,15 @@ body.facilitator .outcome-text{font-size:22px}
       <div class="hero">
         <div class="eyebrow">Cyber-awareness \u00b7 card game</div>
         <h1>HUMAN <span class="fw">FIREWALL</span></h1>
-        <div class="sub">Ten everyday incidents. Five ways to react. Keep the company standing.</div>
+        <div class="sub">${N} everyday incidents. ${GAME.decisions.length} ways to react. Keep the company standing.</div>
         <div class="modes">
           <button class="modebtn" data-mode="solo">
             <span class="ic">\u25b6</span>
             <span><span class="t">Play solo</span><br><span class="d">Train at your own pace and get a score.</span></span>
+          </button>
+          <button class="modebtn" data-mode="multiplayer">
+            <span class="ic">\u2687</span>
+            <span><span class="t">Play as a team</span><br><span class="d">Pass &amp; play \u2014 take turns, share the meters.</span></span>
           </button>
           <button class="modebtn" data-mode="facilitator">
             <span class="ic">\u2318</span>
@@ -299,26 +327,74 @@ body.facilitator .outcome-text{font-size:22px}
         <div class="legend">${leg}</div>
       </div>`;
     foot.textContent = GAME.scenarios.length+" scenarios \u00b7 "+GAME.events.length+" event cards";
-    stage.querySelectorAll(".modebtn").forEach(b=>b.onclick=()=>startGame(b.dataset.mode));
+    stage.querySelectorAll(".modebtn").forEach(b=>b.onclick=()=>{
+      if(b.dataset.mode==="multiplayer") showSetup(); else startGame(b.dataset.mode);
+    });
   }
 
-  function startGame(mode){
-    state={mode, incident:1, meters:{}, deck:buildDeck(), eventUsed:false, activeMod:null, activeReward:null};
+  // ---------- team setup ----------
+  function esc(s){return (s||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;");}
+  function showSetup(){
+    topbar.style.display="none"; hud.style.display="none"; foot.textContent="";
+    document.body.classList.remove("facilitator");
+    let names=["",""];
+    function render(){
+      const rows=names.map((n,i)=>`
+        <div class="roster-row">
+          <span class="rn mono">${i+1}</span>
+          <input class="pinput" data-i="${i}" maxlength="20" placeholder="Player ${i+1}" value="${esc(n)}" aria-label="Player ${i+1} name"${i===0?" autofocus":""}>
+          <button class="rrm" data-rm="${i}"${names.length<=2?" disabled":""} aria-label="Remove player ${i+1}">\u00d7</button>
+        </div>`).join("");
+      const canStart = names.map(s=>s.trim()).filter(Boolean).length>=2;
+      stage.innerHTML=`
+        <div class="hero setup">
+          <div class="eyebrow">Team mode \u00b7 pass &amp; play</div>
+          <h1>Who\u2019s playing?</h1>
+          <div class="sub">Add 2\u20136 players. You\u2019ll take turns deciding \u2014 one incident each, in order. The meters are shared, so you win or lose as a team.</div>
+          <div class="roster">${rows}</div>
+          <button class="btn ghost addp" id="addp"${names.length>=6?" disabled":""}>+ Add player</button>
+          <div class="actions">
+            <button class="btn primary" id="startgame"${canStart?"":" disabled"}>Start game</button>
+            <button class="btn ghost" id="backbtn">Back</button>
+          </div>
+        </div>`;
+      function clean(){return names.map(s=>s.trim()).filter(Boolean);}
+      function go(){const c=clean(); if(c.length>=2) startGame("multiplayer", c);}
+      stage.querySelectorAll(".pinput").forEach(inp=>{
+        inp.oninput=()=>{ names[+inp.dataset.i]=inp.value; $("startgame").disabled=clean().length<2; };
+        inp.onkeydown=(e)=>{ if(e.key==="Enter") go(); };
+      });
+      stage.querySelectorAll(".rrm").forEach(b=>b.onclick=()=>{ if(names.length>2){ names.splice(+b.dataset.rm,1); render(); } });
+      $("addp").onclick=()=>{ if(names.length<6){ names.push(""); render(); } };
+      $("startgame").onclick=go;
+      $("backbtn").onclick=showStart;
+    }
+    render();
+  }
+
+  function startGame(mode, names){
+    const players=(names||[]).map(n=>({name:n, correct:0, wrong:0}));
+    state={mode, incident:1, meters:{}, deck:buildDeck(), eventUsed:false, activeMod:null, activeReward:null, players};
     MK.forEach(k=>state.meters[k]=M[k].start);
     document.body.classList.toggle("facilitator", mode==="facilitator");
     topbar.style.display="flex"; hud.style.display="grid";
-    modePill.textContent = mode==="facilitator"?"FACILITATOR":"SOLO";
+    modePill.textContent = mode==="facilitator"?"FACILITATOR":(mode==="multiplayer"?"TEAM":"SOLO");
     buildHUD(); renderMeters(false);
     showScenario();
   }
 
   function curScenario(){return state.deck[state.incident-1];}
+  // Round-robin: who decides the current incident (multiplayer only).
+  function curPlayerIndex(){ const p=state.players; return (p&&p.length)?(state.incident-1)%p.length:-1; }
+  function curPlayerName(){ const i=curPlayerIndex(); return i>=0?state.players[i].name:null; }
 
   function showScenario(){
     counter.innerHTML = `INCIDENT <b>${String(state.incident).padStart(2,"0")}</b> / ${N}`;
     const s=curScenario();
+    const who = state.mode==="multiplayer" ? curPlayerName() : null;
     const prompt = state.mode==="facilitator"
-      ? "The team decides \u2014 play one card." : "What do you do?";
+      ? "The team decides \u2014 play one card."
+      : (who ? who+", what do you do?" : "What do you do?");
     const decs = GAME.decisions.filter(d=>s.outcomes[d.name]).map((d,i)=>`
       <button class="dec" data-dec="${d.name}" style="--dc:${d.color}">
         <span class="k">${i+1}</span>
@@ -332,8 +408,9 @@ body.facilitator .outcome-text{font-size:22px}
       banner=`<div class="evbanner" style="border-color:${state.activeMod.color}"><b>${state.activeMod.label}</b> \u2014 wrong answers on ${state.activeMod.channelLabel} cost \u00d7${state.activeMod.mult} (through incident ${state.activeMod.until}).</div>`;
     else if(modActive(state.activeReward))
       banner=`<div class="evbanner" style="border-color:var(--good)"><b>${state.activeReward.label}</b> \u2014 correct answers earn +${state.activeReward.amount} Security (through incident ${state.activeReward.until}).</div>`;
+    const turnBanner = who ? `<div class="turnbanner"><span class="who">${esc(who)}</span><span class="up">it\u2019s your call</span></div>` : "";
     stage.innerHTML = `
-      ${banner}
+      ${turnBanner}${banner}
       <div class="card">
         <span class="tag" style="background:${s.color}">${s.categoryLabel}</span>
         <div class="targets">Targets: ${s.targets}</div>
@@ -382,6 +459,8 @@ body.facilitator .outcome-text{font-size:22px}
 
   function choose(dec){
     const s=curScenario(), o=s.outcomes[dec], d=GAME.decisions.find(x=>x.name===dec);
+    // In multiplayer, tally this incident against whoever's turn it is.
+    if(state.mode==="multiplayer"){ const i=curPlayerIndex(); if(i>=0){ if(dec===s.bestDecision) state.players[i].correct++; else state.players[i].wrong++; } }
     let deltas=o.deltas, notes="";
     if(modActive(state.activeMod) && s.category===state.activeMod.channel && dec!==s.bestDecision){
       deltas=amplify(deltas, state.activeMod.mult);
@@ -449,6 +528,16 @@ body.facilitator .outcome-text{font-size:22px}
     const rt = ratingFor(mt.S);
     const stars = won ? "\u2605".repeat(rt.stars)+"\u2606".repeat(3-rt.stars) : "\u2606\u2606\u2606";
     const finals = MK.map(k=>`<div class="fm"><div class="n">${M[k].short}</div><div class="v" style="color:var(--${meterColor(k,mt[k])})">${fmt(k,mt[k])}</div></div>`).join("");
+    let scoreboard="";
+    if(state.players && state.players.length){
+      const ranked=state.players.slice().sort((a,b)=>b.correct-a.correct);
+      const top=ranked.length?ranked[0].correct:0;
+      const rows=ranked.map(p=>{
+        const calls=p.correct+p.wrong, mvp=top>0&&p.correct===top;
+        return `<div class="sb-row"><span class="sb-name">${mvp?"👑 ":""}${esc(p.name)}</span><span class="sb-score mono">${p.correct}/${calls} correct</span></div>`;
+      }).join("");
+      scoreboard=`<div class="scoreboard"><h3>Team scoreboard</h3>${rows}</div>`;
+    }
     stage.innerHTML = `
       <div class="card verdict">
         <div class="stars" style="color:${won?"var(--good)":"var(--bad)"}">${stars}</div>
@@ -456,20 +545,21 @@ body.facilitator .outcome-text{font-size:22px}
         <div class="rk">${won?rt.label:"incident response required"}</div>
         <p class="reason">${reason}</p>
         <div class="final">${finals}</div>
+        ${scoreboard}
         <div class="actions">
           <button class="btn primary" id="again">Play again</button>
           <button class="btn ghost" id="home">Switch mode</button>
         </div>
       </div>`;
-    $("again").onclick=()=>startGame(state.mode);
+    $("again").onclick=()=>startGame(state.mode, state.players?state.players.map(p=>p.name):[]);
     $("home").onclick=showStart;
   }
 
-  // keyboard 1-5 to choose during a scenario
+  // keyboard 1-4 to choose during a scenario
   document.addEventListener("keydown",e=>{
     if(!state||state.mode==null)return;
     const n=parseInt(e.key,10);
-    if(n>=1&&n<=5){ const b=stage.querySelectorAll(".dec")[n-1]; if(b)b.click(); }
+    if(n>=1&&n<=4){ const b=stage.querySelectorAll(".dec")[n-1]; if(b)b.click(); }
   });
 
   showStart();
