@@ -1,0 +1,14 @@
+# Netlify build + routing config for Human Firewall.
+# Env vars (set in Netlify UI → Site settings → Environment, or via CLI):
+#   VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY
+# Leave VITE_APP_URL unset — the join QR then uses the deployed origin automatically.
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# SPA fallback so /join/<code> deep links resolve to the app.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
